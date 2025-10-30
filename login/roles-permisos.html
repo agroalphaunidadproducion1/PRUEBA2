@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrar Accesos - Sistema Agroalpha</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+            --admin-color: #2196F3;
+            --grower-junior-color: #FF9800;
+            --digitador-color: #9C27B0;
+            --tecnico-color: #607D8B;
+            --supervisor-color: #FF5722;
+            --invitado-color: #9E9E9E;
+            --gerente-general-color: #E91E63;
+            --gerente-produccion-color: #3F51B5;
+            --jefe-vivero-color: #009688;
+            --error-color: #f44336;
+            --light-gray: #f5f5f5;
+            --white: #ffffff;
+            --dark-gray: #000000;
+            --sidebar-bg: #2c3e50;
+            --sidebar-hover: #34495e;
+            --sidebar-active: #3498db;
+            
+            /* Nuevos colores para roles adicionales */
+            --grower-color: #FF9800;
+            --fitosanidad-color: #795548;
+            --culturales-color: #FF5722;
+            --riego-color: #00BCD4;
+            --consultor-color: #E91E63;
+            --mezclero-fitosanidad-color: #795548;
+            --usuario-color: #795548;
+            --default-role-color: #757575;
+            
+            /* Colores para la página de administración */
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --border-color: #dee2e6;
+            --card-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            min-height: 100vh;
+            transition: margin-left 0.3s;
+        }
+        
+        /* Header con botón hamburguesa */
+        .header {
+            background-color: var(--white);
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--dark-gray);
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-right: 15px;
+        }
+        
+        .menu-toggle:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .brand h1 {
+            font-size: 20px;
+            color: var(--dark-gray);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: -250px;
+            padding: 20px 0;
+            overflow-y: auto;
+            transition: left 0.3s;
+            z-index: 200;
+        }
+        
+        .sidebar.active {
+            left: 0;
+        }
+        
+        .close-menu {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+        }
+        
+        .logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .user-info {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        
+        .user-info p {
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: white;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+        
+        /* Clases actualizadas para los badges de roles */
+        .admin-badge { background-color: var(--admin-color); color: white; }
+        .grower-badge { background-color: var(--grower-color); color: white; }
+        .grower-junior-badge { background-color: var(--grower-junior-color); color: white; }
+        .digitador-badge { background-color: var(--digitador-color); color: white; }
+        .fitosanidad-badge { background-color: var(--fitosanidad-color); color: white; }
+        .culturales-badge { background-color: var(--culturales-color); color: white; }
+        .riego-badge { background-color: var(--riego-color); color: white; }
+        .supervisor-badge { background-color: var(--supervisor-color); color: white; }
+        .invitado-badge { background-color: var(--invitado-color); color: white; }
+        .gerente-general-badge { background-color: var(--gerente-general-color); color: white; }
+        .gerente-produccion-badge { background-color: var(--gerente-produccion-color); color: white; }
+        .jefe-vivero-badge { background-color: var(--jefe-vivero-color); color: white; }
+        .consultor-badge { background-color: var(--consultor-color); color: white; }
+        .mezclero-fitosanidad-badge { background-color: var(--mezclero-fitosanidad-color); color: white; }
+        .usuario1-badge { background-color: var(--usuario-color); color: white; }
+        .usuario2-badge { background-color: var(--usuario-color); color: white; }
+        .usuario3-badge { background-color: var(--usuario-color); color: white; }
+        .usuario4-badge { background-color: var(--usuario-color); color: white; }
+        .default-badge { background-color: var(--default-role-color); color: white; }
+        
+        .nav-section {
+            margin-bottom: 25px;
+        }
+        
+        .nav-section h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            padding: 0 20px;
+            margin-bottom: 10px;
+            color: #95a5a6;
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-item:hover {
+            background-color: var(--sidebar-hover);
+        }
+        
+        .nav-item.active {
+            background-color: var(--sidebar-active);
+        }
+        
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Overlay para cerrar menú al hacer clic fuera */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 150;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* Main Content - Estilos para la página de administración */
+        .main-content {
+            padding: 20px;
+            min-height: calc(100vh - 70px);
+            transition: margin-left 0.3s;
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .admin-panels {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+        
+        .roles-panel {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            height: fit-content;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .panel-title {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .roles-list {
+            list-style: none;
+        }
+        
+        .role-item {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .role-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .role-item.active {
+            background-color: #e8f5e9;
+            font-weight: 600;
+        }
+        
+        .modules-panel {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+        }
+        
+        .modules-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .module-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .module-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .module-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+        
+        .module-title {
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+        
+        .module-description {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+        
+        .module-link {
+            font-size: 0.8rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            word-break: break-all;
+        }
+        
+        .module-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--success-color);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        .delete-module {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--danger-color);
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        
+        .delete-module:hover {
+            opacity: 1;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #bd2130;
+        }
+        
+        .add-module-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+        
+        .add-module-btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: white;
+            background-color: var(--success-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .close-modal {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-gray);
+            font-size: 14px;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+        
+        .notification.warning {
+            background-color: var(--warning-color);
+        }
+        
+        .icon-selector {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .icon-search {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        
+        .icon-option {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .icon-option:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .icon-option.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .selected-icon-preview {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 900px) {
+            .admin-panels {
+                grid-template-columns: 1fr;
+            }
+            
+            .icons-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .icons-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Overlay para cerrar menú -->
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Header con botón hamburguesa -->
+    <div class="header">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="brand">
+            <h1>Agroalpha</h1>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <button class="close-menu" id="closeMenu">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="logo">
+            <h1>Agroalpha</h1>
+        </div>
+        
+        <div class="user-info">
+            <p id="user-unit">Unidad de Producción 1</p>
+            <p id="user-name">Usuario</p>
+            <p id="user-role" class="role-badge">Rol</p>
+        </div>
+        
+        <div class="nav-section">
+            <h3>Navegación Principal</h3>
+            <a class="nav-item" href="dashboard.html">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <div class="nav-item">
+                <i class="fas fa-bell"></i>
+                <span>Notificaciones</span>
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <h3>Módulos del Sistema</h3>
+            <div id="modules-nav">
+                <div class="nav-item">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Cargando módulos...</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <h3>Administración</h3>
+            <a class="nav-item" href="Crearusuario.html">
+                <i class="fas fa-user-plus"></i>
+                <span>Crear Usuarios</span>
+            </a>
+            <a class="nav-item active" href="administrar-accesos.html">
+                <i class="fas fa-unlock-alt"></i>
+                <span>Administrar Accesos</span>
+            </a>
+            <div class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Configuración</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Mi Perfil</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-question-circle"></i>
+                <span>Ayuda</span>
+            </div>
+            <div class="nav-item" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Cerrar Sesión</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="admin-container">
+            <div class="breadcrumb">
+                <a href="dashboard.html">Dashboard</a><a href="manejo-users.html">/Gestión de Usuarios</a> / Administrar Accesos
+            </div>
+            
+            <div class="page-title">
+                <h1><i class="fas fa-unlock-alt"></i> Configuración de Permisos por Rol</h1>
+                <button class="add-module-btn" id="addModuleBtn">
+                    <i class="fas fa-plus"></i> Agregar Módulo
+                </button>
+            </div>
+            
+            <div class="admin-panels">
+                <div class="roles-panel">
+                    <h2 class="panel-title">
+                        <i class="fas fa-user-tag"></i> Roles del Sistema
+                    </h2>
+                    <ul class="roles-list" id="rolesList">
+                        <li class="role-item active" data-role="Administrador">
+                            <span>Administrador</span>
+                            <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                        </li>
+                        <li class="role-item" data-role="Gerente General">
+                            <span>Gerente General</span>
+                        </li>
+                        <li class="role-item" data-role="Gerente de Producción">
+                            <span>Gerente de Producción</span>
+                        </li>
+                        <li class="role-item" data-role="Supervisor">
+                            <span>Supervisor</span>
+                        </li>
+                        <li class="role-item" data-role="Jefe de Vivero">
+                            <span>Jefe de Vivero</span>
+                        </li>
+                        <li class="role-item" data-role="Grower">
+                            <span>Grower</span>
+                        </li>
+                        <li class="role-item" data-role="Grower Junior">
+                            <span>Grower Junior</span>
+                        </li>
+                        <li class="role-item" data-role="Digitador">
+                            <span>Digitador</span>
+                        </li>
+                        <li class="role-item" data-role="Técnico Fitosanidad">
+                            <span>Técnico Fitosanidad</span>
+                        </li>
+                        <li class="role-item" data-role="Técnico Prácticas Culturales">
+                            <span>Técnico Prácticas Culturales</span>
+                        </li>
+                        <li class="role-item" data-role="Técnico Riego">
+                            <span>Técnico Riego</span>
+                        </li>
+                        <li class="role-item" data-role="Mezclero Fitosanidad">
+                            <span>Mezclero Fitosanidad</span>
+                        </li>
+                        <li class="role-item" data-role="Consultor">
+                            <span>Consultor</span>
+                        </li>
+                        <li class="role-item" data-role="Usuario1">
+                            <span>Usuario1</span>
+                        </li>
+                        <li class="role-item" data-role="Usuario2">
+                            <span>Usuario2</span>
+                        </li>
+                        <li class="role-item" data-role="Usuario3">
+                            <span>Usuario3</span>
+                        </li>
+                        <li class="role-item" data-role="Usuario4">
+                            <span>Usuario4</span>
+                        </li>
+                        <li class="role-item" data-role="Invitado">
+                            <span>Invitado</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="modules-panel">
+                    <div class="modules-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-th-large"></i> Módulos para: <span id="selectedRole">Administrador</span>
+                        </h2>
+                    </div>
+                    <p>Selecciona los módulos a los que tendrá acceso este rol.</p>
+                    
+                    <div class="modules-grid" id="modulesGrid">
+                        <!-- Módulos se cargarán dinámicamente -->
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn btn-secondary" id="resetBtn">
+                            <i class="fas fa-undo"></i> Restablecer
+                        </button>
+                        <button class="btn btn-primary" id="saveBtn">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar/editar módulo -->
+    <div class="modal" id="moduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Agregar Nuevo Módulo</h2>
+                <span class="close-modal" id="closeModal">&times;</span>
+            </div>
+            <form id="moduleForm">
+                <input type="hidden" id="moduleId">
+                <div class="form-group">
+                    <label for="moduleTitle">Nombre del Módulo</label>
+                    <input type="text" id="moduleTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="moduleDescription">Descripción</label>
+                    <input type="text" id="moduleDescription" required>
+                </div>
+                <div class="form-group">
+                    <label for="moduleIcon">Icono</label>
+                    <input type="text" id="moduleIcon" placeholder="fa-users-gear" required readonly>
+                    <small>Selecciona un icono de la lista</small>
+                    
+                    <div class="icon-selector">
+                        <input type="text" class="icon-search" id="iconSearch" placeholder="Buscar icono...">
+                        <div class="icons-grid" id="iconsGrid">
+                            <!-- Iconos se cargarán dinámicamente -->
+                        </div>
+                    </div>
+                    <div class="selected-icon-preview">
+                        <i id="iconPreview"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="moduleLink">URL del Módulo</label>
+                    <input type="text" id="moduleLink" placeholder="modulo.html" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Módulo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i> <span id="notificationText">Cambios guardados correctamente</span>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            databaseURL: "https://agro-productos-default-rtdb.firebaseio.com/"
+        };
+        
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        // Referencias a Firebase
+        const usersRef = database.ref('login');
+        const activeUsersRef = database.ref('uactivos');
+        const modulesRef = database.ref('modules');
+        const accessRef = database.ref('accesos');
+        
+        // Variables globales
+        let systemModules = [];
+        let roleAccess = {};
+        let userRole = '';
+        
+        // Elementos del DOM
+        const menuToggle = document.getElementById('menuToggle');
+        const closeMenu = document.getElementById('closeMenu');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const mainContent = document.getElementById('mainContent');
+        
+        // Funciones para el menú hamburguesa
+        function openMenu() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Event listeners para el menú
+        menuToggle.addEventListener('click', openMenu);
+        closeMenu.addEventListener('click', closeSidebar);
+        overlay.addEventListener('click', closeSidebar);
+        
+        // Verificar sesión al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = JSON.parse(sessionStorage.getItem('currentUser'));
+            
+            if (!userData || !userData.username) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Guardar el rol del usuario
+            userRole = userData.role;
+            
+            // Configurar eventos
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
+            // Verificar si el usuario sigue activo en uactivos
+            activeUsersRef.child(userData.username).once('value')
+                .then(snapshot => {
+                    if (!snapshot.exists()) {
+                        logout();
+                        return;
+                    }
+                    
+                    // Mostrar información del usuario
+                    displayUserInfo(userData);
+                    
+                    // Cargar módulos para el menú
+                    loadModulesForMenu();
+                    
+                    // Inicializar la página de administración
+                    initAdminPage();
+                })
+                .catch(error => {
+                    console.error('Error verificando sesión activa:', error);
+                });
+        });
+        
+        // Cargar módulos para el menú
+        function loadModulesForMenu() {
+            // Cargar módulos y accesos en paralelo
+            Promise.all([
+                modulesRef.once('value'),
+                accessRef.once('value')
+            ])
+            .then(([modulesSnapshot, accessSnapshot]) => {
+                // Procesar módulos
+                if (modulesSnapshot.exists()) {
+                    const modulesData = modulesSnapshot.val();
+                    
+                    // Verificar si modulesData es un array o un objeto
+                    if (Array.isArray(modulesData)) {
+                        systemModules = modulesData;
+                    } else if (typeof modulesData === 'object' && modulesData !== null) {
+                        // Convertir objeto a array
+                        systemModules = Object.values(modulesData);
+                    } else {
+                        systemModules = [];
+                    }
+                } else {
+                    systemModules = [];
+                }
+                
+                // Procesar accesos
+                if (accessSnapshot.exists()) {
+                    roleAccess = accessSnapshot.val();
+                } else {
+                    roleAccess = {};
+                }
+                
+                // Generar elementos de navegación en el menú lateral
+                generateNavItems();
+            })
+            .catch(error => {
+                console.error('Error cargando datos de Firebase:', error);
+            });
+        }
+        
+        // Mostrar información del usuario
+        function displayUserInfo(userData) {
+            document.getElementById('user-name').textContent = userData.name || userData.username;
+            document.getElementById('user-unit').textContent = userData.unit || 'Unidad de Producción 1';
+            
+            const roleBadge = document.getElementById('user-role');
+            roleBadge.textContent = userData.role;
+            roleBadge.className = 'role-badge ' + getBadgeClass(userData.role);
+        }
+        
+        // Obtener clase CSS para el badge según el rol (actualizada)
+        function getBadgeClass(role) {
+            const roleClasses = {
+                'Administrador': 'admin-badge',
+                'Admin': 'admin-badge',
+                'Gerente General': 'gerente-general-badge',
+                'Gerente de Producción': 'gerente-produccion-badge',
+                'Supervisor': 'supervisor-badge',
+                'Jefe de Vivero': 'jefe-vivero-badge',
+                'Grower': 'grower-badge',
+                'Grower Junior': 'grower-junior-badge',
+                'Digitador': 'digitador-badge',
+                'Técnico Fitosanidad': 'fitosanidad-badge',
+                'Fitosanidad': 'fitosanidad-badge',
+                'Técnico Prácticas Culturales': 'culturales-badge',
+                'Prácticas Culturales': 'culturales-badge',
+                'Culturales': 'culturales-badge',
+                'Técnico Riego': 'riego-badge',
+                'Riego': 'riego-badge',
+                'Mezclero Fitosanidad': 'mezclero-fitosanidad-badge',
+                'Consultor': 'consultor-badge',
+                'Usuario1': 'usuario1-badge',
+                'Usuario2': 'usuario2-badge',
+                'Usuario3': 'usuario3-badge',
+                'Usuario4': 'usuario4-badge',
+                'Invitado': 'invitado-badge'
+            };
+            return roleClasses[role] || 'default-badge';
+        }
+        
+        // Generar elementos de navegación en el menú lateral
+        function generateNavItems() {
+            const container = document.getElementById('modules-nav');
+            
+            // Verificar si tenemos los datos necesarios
+            if (systemModules.length === 0 || Object.keys(roleAccess).length === 0) {
+                container.innerHTML = '<div class="nav-item"><span>Sin módulos disponibles</span></div>';
+                return;
+            }
+            
+            // Obtener los accesos para el rol del usuario
+            const userAccess = roleAccess[userRole];
+            
+            if (!userAccess) {
+                container.innerHTML = '<div class="nav-item"><span>Sin módulos disponibles</span></div>';
+                return;
+            }
+            
+            // Filtrar módulos a los que el usuario tiene acceso
+            const accessibleModules = [];
+            
+            systemModules.forEach(module => {
+                if (!module || !module.id) return;
+                
+                // Verificar acceso
+                const hasAccess = userAccess[module.id];
+                
+                if (hasAccess) {
+                    accessibleModules.push(module);
+                }
+            });
+            
+            if (accessibleModules.length === 0) {
+                container.innerHTML = '<div class="nav-item"><span>Sin módulos disponibles</span></div>';
+                return;
+            }
+            
+            // Generar elementos de navegación
+            container.innerHTML = '';
+            accessibleModules.forEach(module => {
+                const navItem = document.createElement('a');
+                navItem.className = 'nav-item';
+                navItem.href = module.link || '#';
+                
+                navItem.innerHTML = `
+                    <i class="fas ${module.icon || 'fa-cube'}"></i>
+                    <span>${module.title || 'Módulo sin nombre'}</span>
+                `;
+                
+                container.appendChild(navItem);
+            });
+        }
+        
+        // Cerrar sesión
+        function logout() {
+            const userData = JSON.parse(sessionStorage.getItem('currentUser'));
+            
+            if (userData?.username) {
+                // Eliminar de usuarios activos
+                activeUsersRef.child(userData.username).remove()
+                    .then(() => {
+                        sessionStorage.removeItem('currentUser');
+                        window.location.href = 'index.html';
+                    })
+                    .catch(error => {
+                        console.error('Error al cerrar sesión:', error);
+                        sessionStorage.removeItem('currentUser');
+                        window.location.href = 'index.html';
+                    });
+            } else {
+                sessionStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // =============================================
+        // CÓDIGO ESPECÍFICO PARA LA PÁGINA DE ADMINISTRACIÓN
+        // =============================================
+        
+        // Lista de iconos FontAwesome comunes
+        const commonIcons = [
+            'fa-users', 'fa-user-tie', 'fa-clipboard-check', 'fa-clipboard-list', 
+            'fa-database', 'fa-folder-tree', 'fa-bug', 'fa-list-check', 'fa-flask', 
+            'fa-spray-can', 'fa-eye', 'fa-user-check', 'fa-shrimp', 'fa-project-diagram', 
+            'fa-magnifying-glass', 'fa-droplet', 'fa-cloud-rain', 'fa-file-lines', 
+            'fa-chart-bar', 'fa-cog', 'fa-wrench', 'fa-tools', 'fa-chart-line', 
+            'fa-chart-pie', 'fa-table', 'fa-map', 'fa-map-marker', 'fa-calendar', 
+            'fa-clock', 'fa-bell', 'fa-envelope', 'fa-inbox', 'fa-box', 'fa-pallet', 
+            'fa-truck', 'fa-warehouse', 'fa-seedling', 'fa-leaf', 'fa-tree', 
+            'fa-tint', 'fa-cloud-sun', 'fa-temperature-high', 'fa-weight-hanging', 
+            'fa-ruler', 'fa-flask', 'fa-vial', 'fa-microscope', 'fa-prescription-bottle', 
+            'fa-pump-medical', 'fa-syringe', 'fa-pills', 'fa-first-aid', 'fa-heartbeat', 
+            'fa-laptop', 'fa-mobile', 'fa-tablet', 'fa-print', 'fa-server', 'fa-hdd', 
+            'fa-microchip', 'fa-memory', 'fa-desktop', 'fa-keyboard', 'fa-mouse', 
+            'fa-network-wired', 'fa-wifi', 'fa-bluetooth', 'fa-broadcast-tower', 
+            'fa-satellite', 'fa-satellite-dish', 'fa-shield-alt', 'fa-lock', 
+            'fa-unlock', 'fa-key', 'fa-fingerprint', 'fa-id-card', 'fa-passport', 
+            'fa-credit-card', 'fa-money-bill', 'fa-money-bill-wave', 'fa-money-check', 
+            'fa-calculator', 'fa-percentage', 'fa-receipt', 'fa-shopping-cart', 
+            'fa-store', 'fa-tag', 'fa-tags', 'fa-gift', 'fa-award', 'fa-trophy', 
+            'fa-medal', 'fa-crown', 'fa-star', 'fa-flag', 'fa-bookmark', 'fa-heart', 
+            'fa-thumbs-up', 'fa-thumbs-down', 'fa-comment', 'fa-comments', 'fa-quote-left'
+        ];
+
+        // Elementos del DOM para la administración
+        const rolesList = document.getElementById('rolesList');
+        const selectedRoleSpan = document.getElementById('selectedRole');
+        const modulesGrid = document.getElementById('modulesGrid');
+        const saveBtn = document.getElementById('saveBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const addModuleBtn = document.getElementById('addModuleBtn');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+        const moduleModal = document.getElementById('moduleModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelModal = document.getElementById('cancelModal');
+        const moduleForm = document.getElementById('moduleForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const moduleIdInput = document.getElementById('moduleId');
+        const moduleTitleInput = document.getElementById('moduleTitle');
+        const moduleDescriptionInput = document.getElementById('moduleDescription');
+        const moduleIconInput = document.getElementById('moduleIcon');
+        const moduleLinkInput = document.getElementById('moduleLink');
+        const iconsGrid = document.getElementById('iconsGrid');
+        const iconSearch = document.getElementById('iconSearch');
+        const iconPreview = document.getElementById('iconPreview');
+
+        // Rol actualmente seleccionado
+        let currentRole = 'Administrador';
+        let editingModuleId = null;
+
+        // Inicializar la página de administración
+        function initAdminPage() {
+            // Configurar event listeners
+            rolesList.addEventListener('click', function(e) {
+                if (e.target.classList.contains('role-item')) {
+                    selectRole(e.target.dataset.role);
+                } else if (e.target.parentElement.classList.contains('role-item')) {
+                    selectRole(e.target.parentElement.dataset.role);
+                }
+            });
+            
+            saveBtn.addEventListener('click', saveAccess);
+            resetBtn.addEventListener('click', resetAccess);
+            addModuleBtn.addEventListener('click', openAddModuleModal);
+            closeModal.addEventListener('click', closeModuleModal);
+            cancelModal.addEventListener('click', closeModuleModal);
+            moduleForm.addEventListener('submit', saveModule);
+            iconSearch.addEventListener('input', filterIcons);
+            
+            // Cerrar modal al hacer clic fuera del contenido
+            moduleModal.addEventListener('click', function(e) {
+                if (e.target === moduleModal) {
+                    closeModuleModal();
+                }
+            });
+            
+            // Renderizar iconos
+            renderIcons();
+            
+            // Renderizar módulos para el rol actual
+            renderModules(currentRole);
+        }
+
+        // Renderizar iconos en el grid
+        function renderIcons() {
+            iconsGrid.innerHTML = '';
+            
+            commonIcons.forEach(icon => {
+                const iconOption = document.createElement('div');
+                iconOption.className = 'icon-option';
+                iconOption.innerHTML = `<i class="fas ${icon}"></i>`;
+                iconOption.dataset.icon = icon;
+                
+                iconOption.addEventListener('click', () => {
+                    selectIcon(icon);
+                });
+                
+                iconsGrid.appendChild(iconOption);
+            });
+        }
+
+        // Filtrar iconos según la búsqueda
+        function filterIcons() {
+            const searchTerm = iconSearch.value.toLowerCase();
+            const iconOptions = iconsGrid.querySelectorAll('.icon-option');
+            
+            iconOptions.forEach(option => {
+                const iconName = option.dataset.icon.toLowerCase();
+                if (iconName.includes(searchTerm)) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        }
+
+        // Seleccionar un icono
+        function selectIcon(icon) {
+            moduleIconInput.value = icon;
+            iconPreview.className = `fas ${icon}`;
+            
+            // Resaltar el icono seleccionado
+            const iconOptions = iconsGrid.querySelectorAll('.icon-option');
+            iconOptions.forEach(option => {
+                if (option.dataset.icon === icon) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+
+        // Seleccionar un rol
+        function selectRole(role) {
+            currentRole = role;
+            
+            // Actualizar UI
+            document.querySelectorAll('.role-item').forEach(item => {
+                if (item.dataset.role === role) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            selectedRoleSpan.textContent = role;
+            renderModules(role);
+        }
+
+        // Renderizar módulos para el rol seleccionado
+        function renderModules(role) {
+            modulesGrid.innerHTML = '';
+            
+            // Obtener accesos para este rol
+            const accessForRole = roleAccess[role] || {};
+            
+            // Generar tarjetas para los módulos
+            systemModules.forEach(module => {
+                const isEnabled = accessForRole[module.id] || false;
+                
+                const moduleCard = document.createElement('div');
+                moduleCard.className = 'module-card';
+                moduleCard.innerHTML = `
+                    <i class="fas fa-times delete-module" data-module="${module.id}"></i>
+                    <div class="module-header">
+                        <div class="module-icon"><i class="fas ${module.icon}"></i></div>
+                        <div class="module-title">${module.title}</div>
+                    </div>
+                    <div class="module-description">${module.description}</div>
+                    <div class="module-link">${module.link}</div>
+                    <div class="module-actions">
+                        <span>${isEnabled ? 'Habilitado' : 'Deshabilitado'}</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" ${isEnabled ? 'checked' : ''} data-module="${module.id}">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                `;
+                
+                // Agregar evento para editar módulo al hacer doble clic
+                moduleCard.addEventListener('dblclick', () => {
+                    editModule(module.id);
+                });
+                
+                // Agregar evento para eliminar módulo
+                const deleteBtn = moduleCard.querySelector('.delete-module');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteModule(module.id);
+                });
+                
+                modulesGrid.appendChild(moduleCard);
+            });
+        }
+
+        // Guardar accesos en Firebase
+        function saveAccess() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            
+            // Inicializar objeto para este rol si no existe
+            if (!roleAccess[currentRole]) {
+                roleAccess[currentRole] = {};
+            }
+            
+            // Actualizar accesos según las casillas verificadas
+            checkboxes.forEach(checkbox => {
+                const moduleId = checkbox.dataset.module;
+                roleAccess[currentRole][moduleId] = checkbox.checked;
+            });
+            
+            // Guardar en Firebase
+            accessRef.set(roleAccess)
+                .then(() => {
+                    showNotification('Accesos actualizados correctamente para ' + currentRole);
+                })
+                .catch(error => {
+                    console.error('Error guardando accesos:', error);
+                    showNotification('Error al guardar accesos: ' + error.message, 'error');
+                });
+        }
+
+        // Restablecer accesos a los valores predeterminados
+        function resetAccess() {
+            if (confirm(`¿Estás seguro de que deseas restablecer los accesos para ${currentRole} a los valores predeterminados?`)) {
+                // Eliminar accesos personalizados para este rol
+                delete roleAccess[currentRole];
+                
+                // Guardar en Firebase
+                accessRef.set(roleAccess)
+                    .then(() => {
+                        renderModules(currentRole);
+                        showNotification('Accesos restablecidos para ' + currentRole);
+                    })
+                    .catch(error => {
+                        console.error('Error guardando accesos:', error);
+                        showNotification('Error al restablecer accesos: ' + error.message, 'error');
+                    });
+            }
+        }
+
+        // Abrir modal para agregar módulo
+        function openAddModuleModal() {
+            editingModuleId = null;
+            modalTitle.textContent = 'Agregar Nuevo Módulo';
+            moduleForm.reset();
+            moduleIdInput.value = '';
+            iconPreview.className = '';
+            iconSearch.value = '';
+            filterIcons();
+            
+            // Limpiar selección de iconos
+            const iconOptions = iconsGrid.querySelectorAll('.icon-option');
+            iconOptions.forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            moduleModal.style.display = 'flex';
+        }
+
+        // Editar módulo existente
+        function editModule(moduleId) {
+            const module = systemModules.find(m => m.id === moduleId);
+            if (!module) return;
+            
+            editingModuleId = moduleId;
+            modalTitle.textContent = 'Editar Módulo';
+            moduleIdInput.value = module.id;
+            moduleTitleInput.value = module.title;
+            moduleDescriptionInput.value = module.description;
+            moduleIconInput.value = module.icon;
+            moduleLinkInput.value = module.link;
+            
+            // Mostrar vista previa del icono
+            iconPreview.className = `fas ${module.icon}`;
+            
+            // Resaltar el icono seleccionado
+            const iconOptions = iconsGrid.querySelectorAll('.icon-option');
+            iconOptions.forEach(option => {
+                if (option.dataset.icon === module.icon) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+            
+            iconSearch.value = '';
+            filterIcons();
+            
+            moduleModal.style.display = 'flex';
+        }
+
+        // Cerrar modal
+        function closeModuleModal() {
+            moduleModal.style.display = 'none';
+            editingModuleId = null;
+        }
+
+        // Guardar módulo (nuevo o editado) en Firebase
+        function saveModule(e) {
+            e.preventDefault();
+            
+            const title = moduleTitleInput.value.trim();
+            const description = moduleDescriptionInput.value.trim();
+            const icon = moduleIconInput.value.trim();
+            const link = moduleLinkInput.value.trim();
+            
+            if (!title || !description || !icon || !link) {
+                showNotification('Todos los campos son obligatorios', 'error');
+                return;
+            }
+            
+            // Generar ID si es un nuevo módulo
+            const id = editingModuleId || generateModuleId(title);
+            
+            const newModule = {
+                id,
+                title,
+                description,
+                icon: icon.startsWith('fa-') ? icon : `fa-${icon}`,
+                link: link.endsWith('.html') ? link : `${link}.html`
+            };
+            
+            if (editingModuleId) {
+                // Actualizar módulo existente
+                const index = systemModules.findIndex(m => m.id === editingModuleId);
+                if (index !== -1) {
+                    systemModules[index] = newModule;
+                }
+            } else {
+                // Agregar nuevo módulo
+                systemModules.push(newModule);
+                
+                // Agregar el nuevo módulo al administrador por defecto
+                if (!roleAccess['Administrador']) {
+                    roleAccess['Administrador'] = {};
+                }
+                roleAccess['Administrador'][id] = true;
+            }
+            
+            // Guardar en Firebase
+            Promise.all([
+                modulesRef.set(systemModules),
+                accessRef.set(roleAccess)
+            ])
+            .then(() => {
+                renderModules(currentRole);
+                closeModuleModal();
+                showNotification(`Módulo ${editingModuleId ? 'actualizado' : 'agregado'} correctamente`);
+            })
+            .catch(error => {
+                console.error('Error guardando módulo:', error);
+                showNotification('Error al guardar módulo: ' + error.message, 'error');
+            });
+        }
+
+        // Eliminar módulo de Firebase
+        function deleteModule(moduleId) {
+            if (!confirm('¿Estás seguro de que deseas eliminar este módulo? Esto afectará los accesos de todos los roles.')) {
+                return;
+            }
+            
+            // Eliminar módulo de la lista
+            systemModules = systemModules.filter(m => m.id !== moduleId);
+            
+            // Eliminar módulo de los accesos de todos los roles
+            for (const role in roleAccess) {
+                if (roleAccess[role][moduleId]) {
+                    delete roleAccess[role][moduleId];
+                }
+            }
+            
+            // Guardar en Firebase
+            Promise.all([
+                modulesRef.set(systemModules),
+                accessRef.set(roleAccess)
+            ])
+            .then(() => {
+                renderModules(currentRole);
+                showNotification('Módulo eliminado correctamente');
+            })
+            .catch(error => {
+                console.error('Error eliminando módulo:', error);
+                showNotification('Error al eliminar módulo: ' + error.message, 'error');
+            });
+        }
+
+        // Generar ID para módulo basado en el título
+        function generateModuleId(title) {
+            return title.toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+        }
+
+        // Mostrar notificación
+        function showNotification(message, type = 'success') {
+            notificationText.textContent = message;
+            notification.className = 'notification';
+            
+            if (type === 'error') {
+                notification.classList.add('error');
+            } else if (type === 'warning') {
+                notification.classList.add('warning');
+            }
+            
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+      <script src="/footer.js"></script>
+</body>
+</html>
