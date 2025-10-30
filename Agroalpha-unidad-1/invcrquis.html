@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Croquis de Invernadero - Versión Completa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .greenhouse {
+            border: 3px solid #27ae60;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #e8f6ef;
+            position: relative;
+            min-height: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .greenhouse-interior {
+            display: flex;
+            height: 550px;
+            position: relative;
+            border: 2px solid #2ecc71;
+            margin: 5px;
+            width: 100%;
+        }
+        .north-side, .south-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 3px;
+        }
+        .north-side {
+            border-bottom: 3px solid #e74c3c;
+        }
+        .south-side {
+            border-top: 3px solid #e74c3c;
+        }
+        .central-aisle {
+            width: 25px;
+            background-color: #f39c12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+        .chapel {
+            flex: 1;
+            border: 1px solid #7f8c8d;
+            margin: 1px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: #f8f9fa;
+        }
+        .chapel.hidden {
+            display: none !important;
+        }
+        .chapel.selected {
+            background-color: #fffacd;
+            border: 2px solid #ffcc00;
+        }
+        .chapel-label {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            background-color: rgba(255,255,255,0.9);
+            padding: 3px 5px;
+            border-radius: 3px;
+            z-index: 2;
+        }
+        .beds-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            padding: 25px 1px 1px 1px;
+            flex: 1;
+        }
+        .bed {
+            border: 1px solid #bdc3c7;
+            background-color: #ecf0f1;
+            display: flex;
+            padding: 1px;
+            min-height: 25px;
+            flex: 1;
+        }
+        .bed-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #2c3e50;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            padding: 3px;
+            background-color: #dfe6e9;
+            margin-right: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 15px;
+        }
+        .modules-container {
+            display: flex;
+            gap: 1px;
+            flex: 1;
+        }
+        .module {
+            flex: 1;
+            border: 1px dotted #95a5a6;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #7f8c8d;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            min-height: 20px;
+        }
+        .module:hover {
+            background-color: #e3f2fd;
+            border-color: #3498db;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .icon-btn:hover {
+            background-color: #2980b9;
+            transform: scale(1.1);
+        }
+        .flag {
+            position: absolute;
+            cursor: pointer;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .flag-line {
+            width: 2px;
+            height: 12px;
+            background-color: red;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .flag-number {
+            position: absolute;
+            bottom: 13px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: bold;
+            color: black;
+            background-color: rgba(255,255,255,0.9);
+            padding: 1px 2px;
+            border-radius: 2px;
+            white-space: nowrap;
+        }
+        .flag-type-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            justify-content: center;
+        }
+        .type-option {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            background-color: #e0e0e0;
+            transition: all 0.2s;
+            font-size: 12px;
+        }
+        .type-option.selected {
+            background-color: #3498db;
+            color: white;
+            transform: scale(1.1);
+        }
+        .settings-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            z-index: 100;
+            width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .settings-panel h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .settings-options {
+            margin-bottom: 15px;
+        }
+        .color-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+            justify-content: center;
+        }
+        .color-option {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .color-option.selected {
+            border-color: #2c3e50;
+            transform: scale(1.1);
+        }
+        .chapel-selection {
+            margin-top: 15px;
+        }
+        .chapel-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .chapel-option {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            transition: all 0.2s;
+            min-width: 40px;
+            text-align: center;
+        }
+        .chapel-option.selected {
+            background-color: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+        .chapel-option.all {
+            background-color: #2ecc71;
+            color: white;
+            font-weight: bold;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+        .info-panel {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .print-info {
+            background-color: #fffacd;
+            padding: 8px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 12px;
+            text-align: center;
+        }
+        button {
+            padding: 8px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #closeSettings {
+            background-color: #e74c3c;
+        }
+        #closeSettings:hover {
+            background-color: #c0392b;
+        }
+        
+        /* Estilos específicos para impresión */
+        @media print {
+            body {
+                background-color: white;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                width: 100%;
+            }
+            .controls, .flag-type-selector, .print-info {
+                display: none !important;
+            }
+            .greenhouse {
+                border: 2px solid #000;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Croquis de Invernadero - Versión Completa</h1>
+        
+        <div class="info-panel">
+            <strong>Estructura:</strong> 36 Capillas × 8 Camas × 10 Módulos = 2,880 módulos totales
+            <div class="print-info">
+                Para mejor calidad de impresión, use la opción "Guardar como imagen" y luego imprima la imagen
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="icon-btn" id="clearBtn" title="Limpiar todo">🧹</button>
+            <button class="icon-btn" id="saveBtn" title="Guardar como imagen">💾</button>
+            <button class="icon-btn" id="settingsBtn" title="Ajustes">⚙️</button>
+        </div>
+        
+        <div class="flag-type-selector" id="typeSelector">
+            <!-- Los tipos se generarán con JavaScript -->
+        </div>
+        
+        <div class="greenhouse">
+            <div class="greenhouse-interior">
+                <!-- Lado Norte - 18 Capillas -->
+                <div class="north-side" id="northSide">
+                    <!-- Capillas norte se generarán con JavaScript -->
+                </div>
+                
+                <div class="central-aisle">PASILLO</div>
+                
+                <!-- Lado Sur - 18 Capillas -->
+                <div class="south-side" id="southSide">
+                    <!-- Capillas sur se generarán con JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de ajustes -->
+    <div class="overlay" id="overlay"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <h3>Ajustes de Marcadores</h3>
+        
+        <div class="settings-options">
+            <h4>Color de Marcadores:</h4>
+            <div class="color-options" id="colorOptions">
+                <!-- Las opciones de color se generarán con JavaScript -->
+            </div>
+        </div>
+        
+        <div class="settings-options">
+            <h4>Selección de Capillas:</h4>
+            <div class="chapel-selection">
+                <p>Seleccione las capillas que desea mostrar (se mostrarán en ambos lados):</p>
+                <div class="chapel-options" id="chapelOptions">
+                    <!-- Las opciones de capillas se generarán con JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <button id="applySettings">Aplicar</button>
+        <button id="closeSettings">Cerrar</button>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        // Variables globales
+        let flagCounters = {
+            'A': 1, 'B': 1, 'C': 1, 'D': 1, 'E': 1,
+            'F': 1, 'G': 1, 'H': 1, 'I': 1, 'J': 1
+        };
+        let selectedType = 'A';
+        let flagColor = 'red';
+        let selectedChapels = Array.from({length: 18}, (_, i) => i + 1); // Mostrar todas por defecto
+        
+        // Inicializar el selector de tipos
+        function initTypeSelector() {
+            const typeSelector = document.getElementById('typeSelector');
+            const types = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+            
+            types.forEach(type => {
+                const option = document.createElement('div');
+                option.className = 'type-option';
+                if (type === selectedType) option.classList.add('selected');
+                option.textContent = type;
+                option.dataset.type = type;
+                
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.type-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    selectedType = this.dataset.type;
+                });
+                
+                typeSelector.appendChild(option);
+            });
+        }
+        
+        // Inicializar opciones de color
+        function initColorOptions() {
+            const colorOptions = document.getElementById('colorOptions');
+            const colors = [
+                'red', 'blue', 'green', 'yellow', 'orange',
+                'purple', 'pink', 'brown', 'black', 'gray'
+            ];
+            
+            colors.forEach(color => {
+                const option = document.createElement('div');
+                option.className = 'color-option';
+                if (color === flagColor) option.classList.add('selected');
+                option.style.backgroundColor = color;
+                option.dataset.color = color;
+                
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.color-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    flagColor = this.dataset.color;
+                });
+                
+                colorOptions.appendChild(option);
+            });
+        }
+        
+        // Inicializar opciones de capillas
+        function initChapelOptions() {
+            const chapelOptions = document.getElementById('chapelOptions');
+            
+            // Botón para seleccionar todas
+            const allOption = document.createElement('div');
+            allOption.className = 'chapel-option all';
+            allOption.textContent = 'Todas';
+            allOption.addEventListener('click', function() {
+                selectedChapels = Array.from({length: 18}, (_, i) => i + 1);
+                updateChapelSelectionUI();
+            });
+            chapelOptions.appendChild(allOption);
+            
+            // Crear opciones para las 18 capillas
+            for (let i = 1; i <= 18; i++) {
+                const option = document.createElement('div');
+                option.className = 'chapel-option';
+                if (selectedChapels.includes(i)) option.classList.add('selected');
+                option.textContent = i;
+                option.dataset.chapel = i;
+                
+                option.addEventListener('click', function() {
+                    const chapelNum = parseInt(this.dataset.chapel);
+                    
+                    if (selectedChapels.includes(chapelNum)) {
+                        selectedChapels = selectedChapels.filter(c => c !== chapelNum);
+                    } else {
+                        selectedChapels.push(chapelNum);
+                    }
+                    
+                    this.classList.toggle('selected');
+                });
+                
+                chapelOptions.appendChild(option);
+            }
+        }
+        
+        // Actualizar la UI de selección de capillas
+        function updateChapelSelectionUI() {
+            document.querySelectorAll('.chapel-option').forEach(option => {
+                if (option.classList.contains('all')) return;
+                
+                const chapelNum = parseInt(option.dataset.chapel);
+                if (selectedChapels.includes(chapelNum)) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+        
+        // Crear estructura del invernadero
+        function createGreenhouseStructure() {
+            const northSide = document.getElementById('northSide');
+            const southSide = document.getElementById('southSide');
+            
+            // Crear 18 capillas en el lado norte
+            for (let chapelNum = 1; chapelNum <= 18; chapelNum++) {
+                const chapel = createChapel('N', chapelNum);
+                northSide.appendChild(chapel);
+            }
+            
+            // Crear 18 capillas en el lado sur
+            for (let chapelNum = 1; chapelNum <= 18; chapelNum++) {
+                const chapel = createChapel('S', chapelNum);
+                southSide.appendChild(chapel);
+            }
+            
+            // Aplicar la selección inicial
+            updateChapelVisibility();
+        }
+        
+        // Actualizar visibilidad de capillas
+        function updateChapelVisibility() {
+            document.querySelectorAll('.chapel').forEach(chapel => {
+                const chapelNum = parseInt(chapel.dataset.chapel);
+                if (selectedChapels.includes(chapelNum)) {
+                    chapel.classList.remove('hidden');
+                } else {
+                    chapel.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Crear una capilla individual
+        function createChapel(side, chapelNum) {
+            const chapel = document.createElement('div');
+            chapel.className = 'chapel';
+            chapel.dataset.side = side;
+            chapel.dataset.chapel = chapelNum;
+            chapel.id = `${side}${chapelNum}`;
+            
+            // Etiqueta de la capilla
+            const label = document.createElement('div');
+            label.className = 'chapel-label';
+            label.textContent = `${side}${chapelNum}`;
+            chapel.appendChild(label);
+            
+            // Contenedor de camas (8 camas por capilla)
+            const bedsContainer = document.createElement('div');
+            bedsContainer.className = 'beds-container';
+            
+            // Crear 8 camas por capilla
+            for (let bedNum = 1; bedNum <= 8; bedNum++) {
+                const bed = createBed(side, chapelNum, bedNum);
+                bedsContainer.appendChild(bed);
+            }
+            
+            chapel.appendChild(bedsContainer);
+            return chapel;
+        }
+        
+        // Crear una cama individual
+        function createBed(side, chapelNum, bedNum) {
+            const bed = document.createElement('div');
+            bed.className = 'bed';
+            bed.dataset.side = side;
+            bed.dataset.chapel = chapelNum;
+            bed.dataset.bed = bedNum;
+            
+            // Etiqueta de la cama
+            const bedLabel = document.createElement('div');
+            bedLabel.className = 'bed-label';
+            bedLabel.textContent = `C${bedNum}`;
+            bed.appendChild(bedLabel);
+            
+            // Contenedor de módulos (10 módulos por cama)
+            const modulesContainer = document.createElement('div');
+            modulesContainer.className = 'modules-container';
+            
+            // Crear 10 módulos por cama
+            for (let moduleNum = 1; moduleNum <= 10; moduleNum++) {
+                const module = createModule(side, chapelNum, bedNum, moduleNum);
+                modulesContainer.appendChild(module);
+            }
+            
+            bed.appendChild(modulesContainer);
+            return bed;
+        }
+        
+        // Crear un módulo individual
+        function createModule(side, chapelNum, bedNum, moduleNum) {
+            const module = document.createElement('div');
+            module.className = 'module';
+            module.dataset.side = side;
+            module.dataset.chapel = chapelNum;
+            module.dataset.bed = bedNum;
+            module.dataset.module = moduleNum;
+            module.title = `${side}${chapelNum}-C${bedNum}-M${moduleNum}`;
+            
+            // Número pequeño del módulo
+            const moduleNumber = document.createElement('span');
+            moduleNumber.textContent = moduleNum;
+            moduleNumber.style.fontSize = '8px';
+            moduleNumber.style.color = '#7f8c8d';
+            module.appendChild(moduleNumber);
+            
+            return module;
+        }
+        
+        // Función para agregar marcadores de línea
+        function addFlag(event) {
+            if (!event.target.classList.contains('module')) return;
+            
+            const module = event.target;
+            const side = module.dataset.side;
+            const chapelNum = module.dataset.chapel;
+            const bedNum = module.dataset.bed;
+            const moduleNum = module.dataset.module;
+            
+            // Obtener posición del clic dentro del módulo
+            const rect = module.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            
+            // Crear elemento de marcador
+            const flag = document.createElement('div');
+            flag.className = 'flag';
+            
+            // Crear línea vertical
+            const flagLine = document.createElement('div');
+            flagLine.className = 'flag-line';
+            flagLine.style.backgroundColor = flagColor;
+            flagLine.style.left = `${clickX}px`;
+            
+            // Obtener el número para este tipo
+            const flagNumber = flagCounters[selectedType];
+            
+            // Crear número del marcador
+            const flagNumberElement = document.createElement('div');
+            flagNumberElement.className = 'flag-number';
+            flagNumberElement.textContent = `T${selectedType}${flagNumber.toString().padStart(2, '0')}`;
+            flagNumberElement.style.left = `${clickX}px`;
+            
+            // Identificador único del módulo
+            const moduleId = `${side}${chapelNum}-C${bedNum}-M${moduleNum}`;
+            flag.dataset.moduleId = moduleId;
+            flag.dataset.type = selectedType;
+            flag.dataset.number = flagNumber;
+            
+            // Incrementar el contador para este tipo
+            flagCounters[selectedType]++;
+            
+            // Agregar elementos al marcador
+            flag.appendChild(flagLine);
+            flag.appendChild(flagNumberElement);
+            
+            // Agregar el marcador al módulo
+            module.appendChild(flag);
+            
+            // Hacer que los marcadores sean arrastrables
+            makeFlagDraggable(flag, module);
+        }
+        
+        // Hacer los marcadores arrastrables
+        function makeFlagDraggable(flag, module) {
+            let isDragging = false;
+            
+            flag.style.pointerEvents = 'auto';
+            flag.style.cursor = 'move';
+            
+            flag.onmousedown = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                isDragging = true;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            };
+            
+            function onMouseMove(e) {
+                if (!isDragging) return;
+                
+                const moduleRect = module.getBoundingClientRect();
+                const newX = e.clientX - moduleRect.left;
+                
+                // Limitar el movimiento dentro del módulo
+                const maxX = moduleRect.width;
+                
+                const clampedX = Math.max(0, Math.min(newX, maxX));
+                
+                // Actualizar posición de la línea y el número
+                const flagLine = flag.querySelector('.flag-line');
+                const flagNumber = flag.querySelector('.flag-number');
+                
+                flagLine.style.left = `${clampedX}px`;
+                flagNumber.style.left = `${clampedX}px`;
+            }
+            
+            function onMouseUp() {
+                isDragging = false;
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+        }
+        
+        // Aplicar ajustes
+        function applySettings() {
+            // Actualizar todas las banderitas existentes
+            const flags = document.querySelectorAll('.flag');
+            flags.forEach(flag => {
+                const flagLine = flag.querySelector('.flag-line');
+                flagLine.style.backgroundColor = flagColor;
+            });
+            
+            // Actualizar visibilidad de capillas
+            updateChapelVisibility();
+            
+            closeSettingsPanel();
+        }
+        
+        // Abrir panel de ajustes
+        function openSettingsPanel() {
+            document.getElementById('settingsPanel').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+        
+        // Cerrar panel de ajustes
+        function closeSettingsPanel() {
+            document.getElementById('settingsPanel').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+        
+        // Guardar como imagen
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            // Ocultar controles temporariamente para la captura
+            document.querySelector('.controls').style.display = 'none';
+            document.querySelector('.flag-type-selector').style.display = 'none';
+            document.querySelector('.print-info').style.display = 'none';
+            
+            html2canvas(document.querySelector('.container'), {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                width: document.querySelector('.container').offsetWidth,
+                height: document.querySelector('.container').offsetHeight,
+                windowWidth: document.querySelector('.container').scrollWidth,
+                windowHeight: document.querySelector('.container').scrollHeight
+            }).then(canvas => {
+                // Restaurar controles
+                document.querySelector('.controls').style.display = 'flex';
+                document.querySelector('.flag-type-selector').style.display = 'flex';
+                document.querySelector('.print-info').style.display = 'block';
+                
+                const link = document.createElement('a');
+                link.download = 'croquis-invernadero.png';
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            });
+        });
+        
+        // Limpiar todos los marcadores
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            const flags = document.querySelectorAll('.flag');
+            flags.forEach(flag => flag.remove());
+            
+            // Reiniciar contadores
+            for (let type in flagCounters) {
+                flagCounters[type] = 1;
+            }
+        });
+        
+        // Inicializar la aplicación
+        function init() {
+            initTypeSelector();
+            initColorOptions();
+            initChapelOptions();
+            createGreenhouseStructure();
+            
+            // Agregar event listeners a todos los módulos
+            document.querySelectorAll('.module').forEach(module => {
+                module.addEventListener('click', addFlag);
+            });
+            
+            // Configurar botones de ajustes
+            document.getElementById('settingsBtn').addEventListener('click', openSettingsPanel);
+            document.getElementById('applySettings').addEventListener('click', applySettings);
+            document.getElementById('closeSettings').addEventListener('click', closeSettingsPanel);
+            document.getElementById('overlay').addEventListener('click', closeSettingsPanel);
+        }
+        
+        // Ejecutar inicialización cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

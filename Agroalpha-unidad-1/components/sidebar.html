@@ -1,0 +1,49 @@
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-menu">
+        <!-- Sección Principal -->
+        <div class="menu-section">
+            <div class="menu-title">Navegación Principal</div>
+            <a href="dashboard.html" class="menu-item" data-page="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="notificaciones.html" class="menu-item" data-page="notificaciones">
+                <i class="fas fa-bell"></i>
+                <span>Notificaciones</span>
+                <span class="menu-badge" id="globalNotificationCount" style="display: none;">0</span>
+            </a>
+        </div>
+        
+        <!-- Sección Módulos del Sistema -->
+        <div class="menu-section">
+            <div class="menu-title">Módulos del Sistema</div>
+            <div id="modulesMenuContainer">
+                <div class="menu-item">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Cargando módulos...</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección Administración -->
+        <div class="menu-section">
+            <div class="menu-title">Administración</div>
+            <a href="configuracion.html" class="menu-item" data-page="configuracion">
+                <i class="fas fa-cog"></i>
+                <span>Configuración</span>
+            </a>
+            <a href="perfil.html" class="menu-item" data-page="perfil">
+                <i class="fas fa-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+            <a href="ayuda.html" class="menu-item" data-page="ayuda">
+                <i class="fas fa-question-circle"></i>
+                <span>Ayuda</span>
+            </a>
+            <a href="#" class="menu-item" id="logoutMenuItem">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Cerrar Sesión</span>
+            </a>
+        </div>
+    </div>
+</nav>

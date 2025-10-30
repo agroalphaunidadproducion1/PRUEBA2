@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Croquis para Trampas de Invernadero</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 5px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 6px;
+            font-size: 18px;
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 45px;
+            margin-top: 20px;
+            position: relative;
+        }
+        .greenhouse-container {
+            position: relative;
+            width: 100%;
+        }
+        .greenhouse {
+            border: 1px solid #27ae60;
+            border-radius: 4px;
+            padding: 6px;
+            position: relative;
+            min-height: 200px; /* INVERNADEROS MÁS ALTOS */
+            width: 90%;
+            margin: 0 auto;
+            background-color: #e8f6ef;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+        }
+        .greenhouse-interior {
+            display: flex;
+            flex: 1;
+            position: relative;
+            border: 1px solid #2ecc71;
+            margin: 2px;
+            flex-direction: column;
+        }
+        .north-side, .south-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1px;
+            position: relative;
+        }
+        .north-side {
+            border-bottom: 1px solid #e74c3c;
+        }
+        .south-side {
+            border-top: 1px solid #e74c3c;
+        }
+        .central-aisle {
+            width: 100%;
+            height: 10px;
+            background-color: #f39c12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 6px;
+            margin: 2px 0;
+        }
+        .north-label, .south-label {
+            position: absolute;
+            left: 2px;
+            font-size: 7px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .north-label {
+            top: 2px;
+        }
+        .south-label {
+            bottom: 2px;
+        }
+        .perimeter {
+            position: absolute;
+            top: -15px;
+            left: -12px;
+            right: -12px;
+            bottom: -15px;
+            border: 1px dashed #e74c3c;
+            border-radius: 6px;
+            background-color: rgba(253, 237, 236, 0.3);
+            z-index: 1;
+        }
+        .greenhouse-label {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: #27ae60;
+            background-color: white;
+            padding: 1px 3px;
+            border-radius: 2px;
+            border: 1px solid #27ae60;
+            font-size: 8px;
+            z-index: 5;
+            white-space: nowrap;
+        }
+        .storage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px dashed #3498db;
+            border-radius: 4px;
+            padding: 6px;
+            width: 90px;
+            height: 60px;
+            background-color: #ebf5fb;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            flex-direction: column;
+            font-size: 11px;
+        }
+        .entrance {
+            position: absolute;
+            width: 18px;
+            height: 5px;
+            background-color: transparent;
+            z-index: 4;
+        }
+        .entrance.north {
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .entrance.south {
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .entrance.east {
+            right: -2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .entrance.west {
+            left: -2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .entrance.active {
+            background-color: #27ae60;
+            box-shadow: 0 0 2px #27ae60;
+        }
+        .charging-center {
+            position: absolute;
+            width: 18px;
+            height: 5px;
+            background-color: transparent;
+            z-index: 4;
+        }
+        .charging-center.north {
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .charging-center.south {
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .charging-center.east {
+            right: -2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .charging-center.west {
+            left: -2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .charging-center.active {
+            background-color: #8e44ad;
+            box-shadow: 0 0 2px #8e44ad;
+        }
+        .controls {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 100;
+        }
+        .icon-btn {
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .icon-btn:hover {
+            background-color: #2980b9;
+            transform: scale(1.1);
+        }
+        .icon-btn.active {
+            background-color: #e74c3c;
+            transform: scale(1.15);
+        }
+        
+        /* BANDERITAS MEJORADAS - EN FORMA DE LÍNEA */
+        .flag {
+            position: absolute;
+            cursor: move;
+            z-index: 1000; /* Mayor z-index para que esté por encima de todo */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            width: auto;
+            height: auto;
+            transform-origin: center bottom;
+            transition: transform 0.2s ease;
+        }
+        .flag-line {
+            width: 1px;
+            height: 18px;
+            background-color: red;
+            position: relative;
+        }
+        .flag-text {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            padding: 1px 2px;
+            border-radius: 2px;
+            font-size: 7px;
+            font-weight: bold;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+            white-space: nowrap;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            z-index: 1001;
+            cursor: pointer;
+            user-select: none;
+        }
+        .flag.rotating .flag-text {
+            background-color: #fffacd;
+            border-color: #f39c12;
+        }
+        .flag.dragging {
+            z-index: 1002; /* Aún más alto cuando se está arrastrando */
+        }
+        
+        .flag-type-selector {
+            display: none; /* ELIMINADO EL SELECTOR DE TIPOS A,B,C */
+        }
+        .type-option {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            background-color: #e0e0e0;
+            transition: all 0.2s;
+            font-size: 8px;
+        }
+        .type-option.selected {
+            background-color: #3498db;
+            color: white;
+            transform: scale(1.1);
+        }
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .connection {
+            position: absolute;
+            background-color: #95a5a6;
+            height: 1px;
+            transform-origin: 0 0;
+        }
+        .settings-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            z-index: 2000;
+            width: 260px;
+        }
+        .settings-panel h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 13px;
+        }
+        .settings-options {
+            margin-bottom: 8px;
+        }
+        .color-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            margin-bottom: 8px;
+            justify-content: center;
+        }
+        .color-option {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .color-option.selected {
+            border-color: #2c3e50;
+            transform: scale(1.1);
+        }
+        .shape-options {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+            justify-content: center;
+        }
+        .shape-option {
+            padding: 3px 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 9px;
+        }
+        .shape-option.selected {
+            background-color: #3498db;
+            color: white;
+        }
+        .entrance-options, .charging-options {
+            margin-bottom: 8px;
+        }
+        .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            margin-top: 2px;
+            justify-content: center;
+        }
+        .entrance-option, .charging-option {
+            padding: 2px 5px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 8px;
+        }
+        .entrance-option.selected {
+            background-color: #27ae60;
+            color: white;
+        }
+        .charging-option.selected {
+            background-color: #8e44ad;
+            color: white;
+        }
+        .module-names {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        .module-name {
+            display: flex;
+            flex-direction: column;
+        }
+        .module-name label {
+            font-size: 8px;
+            margin-bottom: 1px;
+            color: #2c3e50;
+        }
+        .module-name input {
+            width: 100%;
+            padding: 2px;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+            font-size: 8px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1999;
+        }
+        
+        /* MEJORAS DE CALIDAD VISUAL */
+        .quality-improvements {
+            position: fixed;
+            bottom: 6px;
+            right: 6px;
+            display: flex;
+            gap: 5px;
+            z-index: 100;
+        }
+        .quality-btn {
+            padding: 3px 6px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 8px;
+            transition: background-color 0.3s;
+        }
+        .quality-btn:hover {
+            background-color: #34495e;
+        }
+        
+        /* MEJORAS EN LA VISIBILIDAD DEL TEXTO */
+        .flag-text.contrast {
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #000;
+            font-weight: bold;
+            text-shadow: 0 0 1px white;
+        }
+        
+        /* CUADRO DE LEYENDA */
+        .legend-box {
+            margin-top: 12px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            font-size: 9px;
+        }
+        .legend-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 10px;
+        }
+        .legend-line {
+            margin-bottom: 2px;
+        }
+        
+        /* ESTILOS PARA IMPRESIÓN */
+        @media print {
+            .controls, .flag-type-selector, .quality-improvements {
+                display: none !important;
+            }
+            .flag-text {
+                background-color: white !important;
+                color: black !important;
+                border: 1px solid black !important;
+            }
+        }
+        
+        /* Selector de tipo de trampa */
+        .trap-type-selector {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 100;
+            background-color: white;
+            padding: 5px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .trap-type-btn {
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            color: #2c3e50;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            transition: all 0.3s ease;
+        }
+        .trap-type-btn:hover {
+            background-color: #d0d0d0;
+            transform: scale(1.1);
+        }
+        .trap-type-btn.active {
+            background-color: #3498db;
+            color: white;
+            transform: scale(1.15);
+        }
+        
+        /* PITA-01 en esquina izquierda */
+        .pita-code {
+            position: absolute;
+            top: 8px;
+            left: 60px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+            background-color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid #2c3e50;
+            z-index: 100;
+        }
+        
+        /* REGISTRO DE TRAMPAS TAI - TABLAS */
+        .tai-registry {
+            margin-top: 8px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .tai-registry-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 10px;
+            text-align: center;
+            color: #2c3e50;
+        }
+        .tai-tables-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 6px;
+        }
+        .tai-table {
+            border: 1px solid #95a5a6;
+            border-radius: 3px;
+            padding: 3px;
+            background-color: white;
+        }
+        .tai-table-title {
+            font-size: 8px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 3px;
+            color: #2c3e50;
+            background-color: #e8f6ef;
+            padding: 2px;
+            border-radius: 2px;
+        }
+        .tai-table-title input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 8px;
+            font-weight: bold;
+            outline: none;
+        }
+        .tai-table-content {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tai-table-content th, .tai-table-content td {
+            border: 1px solid #bdc3c7;
+            padding: 2px;
+            text-align: center;
+            font-size: 7px;
+        }
+        .tai-table-content th {
+            background-color: #f1f8e9;
+            font-weight: bold;
+        }
+        .tai-table-content td {
+            cursor: pointer;
+            transition: background-color 0.2s;
+            height: 14px;
+        }
+        .tai-table-content td:hover {
+            background-color: #e9ecef;
+        }
+        .tai-table-content td.active {
+            background-color: #d4edda;
+            font-weight: bold;
+        }
+        .tai-table-content input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 7px;
+            outline: none;
+            cursor: pointer;
+        }
+        .tai-table-content input:focus {
+            background-color: #fffacd;
+        }
+        
+        /* FIRMAS */
+        .signatures {
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 6px;
+        }
+        .signature-box {
+            border-top: 1px solid #2c3e50;
+            padding-top: 4px;
+            text-align: center;
+        }
+        .signature-label {
+            font-size: 9px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .elaborated-section {
+            margin-top: 6px;
+            padding: 6px;
+            text-align: center;
+            border-top: 1px solid #2c3e50;
+        }
+        .elaborated-label {
+            font-size: 9px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+        .date-display {
+            font-size: 9px;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Croquis para Trampas de Invernadero</h1>
+        
+        <!-- PITA-01 en esquina izquierda -->
+        <div class="pita-code">PITA-01</div>
+        
+        <!-- Selector de tipo de trampa -->
+        <div class="trap-type-selector">
+            <button class="trap-type-btn active" id="trapTAE" title="Trampa Amarilla Externa">TAE</button>
+            <button class="trap-type-btn" id="trapTAI" title="Trampa Amarilla Interna">TAI</button>
+        </div>
+        
+        <div class="controls">
+            <button class="icon-btn" id="lockBtn" title="Bloquear/Editar trampas">🔒</button>
+            <button class="icon-btn" id="clearBtn" title="Limpiar todo">🧹</button>
+            <button class="icon-btn" id="saveBtn" title="Guardar como imagen">💾</button>
+            <button class="icon-btn" id="settingsBtn" title="Ajustes">⚙️</button>
+        </div>
+        
+        <div class="layout">
+            <div class="connections" id="connections">
+                <!-- Las conexiones se generarán con JavaScript -->
+            </div>
+            
+            <div class="storage" id="storage">
+                <span id="storageName">Acopio C</span>
+                <div class="entrance north" data-side="north"></div>
+                <div class="entrance south" data-side="south"></div>
+                <div class="entrance east" data-side="east"></div>
+                <div class="entrance west" data-side="west"></div>
+                <div class="charging-center north" data-side="north"></div>
+                <div class="charging-center south" data-side="south"></div>
+                <div class="charging-center east" data-side="east"></div>
+                <div class="charging-center west" data-side="west"></div>
+            </div>
+            
+            <!-- Invernaderos superiores (1 y 2) - Orientación normal -->
+            <div class="greenhouse-container">
+                <div class="perimeter" id="perimeter1"></div>
+                <div class="greenhouse" id="greenhouse1">
+                    <div class="greenhouse-label" id="gh1Label">INVERNADERO 1</div>
+                    <div class="greenhouse-interior">
+                        <div class="north-side" id="north1">
+                            <div class="north-label">NORTE</div>
+                        </div>
+                        <div class="central-aisle">PASILLO</div>
+                        <div class="south-side" id="south1">
+                            <div class="south-label">SUR</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="greenhouse-container">
+                <div class="perimeter" id="perimeter2"></div>
+                <div class="greenhouse" id="greenhouse2">
+                    <div class="greenhouse-label" id="gh2Label">INVERNADERO 2</div>
+                    <div class="greenhouse-interior">
+                        <div class="north-side" id="north2">
+                            <div class="north-label">NORTE</div>
+                        </div>
+                        <div class="central-aisle">PASILLO</div>
+                        <div class="south-side" id="south2">
+                            <div class="south-label">SUR</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Invernaderos inferiores (3 y 4) - Orientación invertida -->
+            <div class="greenhouse-container">
+                <div class="perimeter" id="perimeter3"></div>
+                <div class="greenhouse" id="greenhouse3">
+                    <div class="greenhouse-label" id="gh3Label">INVERNADERO 3</div>
+                    <div class="greenhouse-interior">
+                        <div class="north-side" id="north3">
+                            <div class="north-label">NORTE</div>
+                        </div>
+                        <div class="central-aisle">PASILLO</div>
+                        <div class="south-side" id="south3">
+                            <div class="south-label">SUR</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="greenhouse-container">
+                <div class="perimeter" id="perimeter4"></div>
+                <div class="greenhouse" id="greenhouse4">
+                    <div class="greenhouse-label" id="gh4Label">INVERNADERO 4</div>
+                    <div class="greenhouse-interior">
+                        <div class="north-side" id="north4">
+                            <div class="north-label">NORTE</div>
+                        </div>
+                        <div class="central-aisle">PASILLO</div>
+                        <div class="south-side" id="south4">
+                            <div class="south-label">SUR</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cuadro de leyenda -->
+        <div class="legend-box">
+            <div class="legend-title">LEYENDA</div>
+            <div class="legend-line">TAE: Trampa amarilla exterior</div>
+            <div class="legend-line">TAI: Trampa amarilla interna</div>
+        </div>
+        
+        <!-- Registro de trampas TAI - TABLAS -->
+        <div class="tai-registry">
+            <div class="tai-registry-title">REGISTRO DE TRAMPAS TAI (INTERNAS)</div>
+            <div class="tai-tables-container">
+                <div class="tai-table">
+                    <div class="tai-table-title">
+                        <input type="text" value="MÓDULO 1" class="module-title-input" data-module="1">
+                    </div>
+                    <table class="tai-table-content" id="taiTable1">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Trampa</th>
+                                <th>Ubicación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Las filas se generarán con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tai-table">
+                    <div class="tai-table-title">
+                        <input type="text" value="MÓDULO 2" class="module-title-input" data-module="2">
+                    </div>
+                    <table class="tai-table-content" id="taiTable2">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Trampa</th>
+                                <th>Ubicación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Las filas se generarán con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tai-table">
+                    <div class="tai-table-title">
+                        <input type="text" value="MÓDULO 3" class="module-title-input" data-module="3">
+                    </div>
+                    <table class="tai-table-content" id="taiTable3">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Trampa</th>
+                                <th>Ubicación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Las filas se generarán con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tai-table">
+                    <div class="tai-table-title">
+                        <input type="text" value="MÓDULO 4" class="module-title-input" data-module="4">
+                    </div>
+                    <table class="tai-table-content" id="taiTable4">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Trampa</th>
+                                <th>Ubicación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Las filas se generarán con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Firmas -->
+        <div class="signatures">
+            <div class="signature-box">
+                <div class="signature-label">Encargado actividad</div>
+            </div>
+            <div class="signature-box">
+                <div class="signature-label">Encargado certificaciones</div>
+            </div>
+        </div>
+        
+        <!-- Sección Elaborado y Fecha -->
+        <div class="elaborated-section">
+            <div class="elaborated-label">ELABORADO:</div>
+            <div class="date-display" id="randomDate"></div>
+        </div>
+    </div>
+
+    <!-- Panel de ajustes -->
+    <div class="overlay" id="overlay"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <h3>Ajustes de Banderitas</h3>
+        
+        <div class="settings-options">
+            <h4>Color de Banderitas:</h4>
+            <div class="color-options" id="colorOptions">
+                <!-- Las opciones de color se generarán con JavaScript -->
+            </div>
+            
+            <h4>Forma de Banderitas:</h4>
+            <div class="shape-options">
+                <div class="shape-option selected" data-shape="line">Línea</div>
+            </div>
+            
+            <h4>Nombres de Módulos:</h4>
+            <div class="module-names">
+                <div class="module-name">
+                    <label>Acopio:</label>
+                    <input type="text" id="acopioName" value="Acopio C">
+                </div>
+                <div class="module-name">
+                    <label>Invernadero 1:</label>
+                    <input type="text" id="gh1Name" value="Invernadero 1">
+                </div>
+                <div class="module-name">
+                    <label>Invernadero 2:</label>
+                    <input type="text" id="gh2Name" value="Invernadero 2">
+                </div>
+                <div class="module-name">
+                    <label>Invernadero 3:</label>
+                    <input type="text" id="gh3Name" value="Invernadero 3">
+                </div>
+                <div class="module-name">
+                    <label>Invernadero 4:</label>
+                    <input type="text" id="gh4Name" value="Invernadero 4">
+                </div>
+            </div>
+            
+            <h4>Entrada del Acopio:</h4>
+            <div class="entrance-options">
+                <div class="option-group">
+                    <div class="entrance-option selected" data-side="north">Norte</div>
+                    <div class="entrance-option" data-side="south">Sur</div>
+                    <div class="entrance-option" data-side="east">Este</div>
+                    <div class="entrance-option" data-side="west">Oeste</div>
+                </div>
+            </div>
+            
+            <h4>Centro de Carga:</h4>
+            <div class="charging-options">
+                <div class="option-group">
+                    <div class="charging-option selected" data-side="north">Norte</div>
+                    <div class="charging-option" data-side="south">Sur</div>
+                    <div class="charging-option" data-side="east">Este</div>
+                    <div class="charging-option" data-side="west">Oeste</div>
+                </div>
+            </div>
+        </div>
+        
+        <button id="applySettings">Aplicar</button>
+        <button id="closeSettings">Cerrar</button>
+    </div>
+
+    <!-- Botones de calidad -->
+    <div class="quality-improvements">
+        <button class="quality-btn" id="printBtn">Imprimir</button>
+        <button class="quality-btn" id="contrastBtn">Alto Contraste</button>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        // Variables globales
+        let flagCounters = {
+            'TAE': 1, // Trampas Amarillas Externas
+            'TAI': 1  // Trampas Amarillas Internas
+        };
+        let selectedType = 'TAE';
+        let flagColor = 'red';
+        let flagShape = 'line';
+        let entranceSide = 'north';
+        let chargingSide = 'north';
+        let moduleNames = {
+            'storage': 'Acopio C',
+            'gh1': 'Invernadero 1',
+            'gh2': 'Invernadero 2', 
+            'gh3': 'Invernadero 3',
+            'gh4': 'Invernadero 4'
+        };
+        let moduleTitles = {
+            '1': 'MÓDULO 1',
+            '2': 'MÓDULO 2',
+            '3': 'MÓDULO 3',
+            '4': 'MÓDULO 4'
+        };
+        let highContrast = false;
+        let editMode = false; // Modo edición (bloquear agregar nuevas)
+        
+        // Función para generar fecha aleatoria
+        function generateRandomDate() {
+            const startDate = new Date(2023, 0, 1); // 1 de enero de 2023
+            const endDate = new Date(); // Fecha actual
+            const randomDate = new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
+            
+            const day = randomDate.getDate().toString().padStart(2, '0');
+            const month = (randomDate.getMonth() + 1).toString().padStart(2, '0');
+            const year = randomDate.getFullYear();
+            
+            return `${day}/${month}/${year}`;
+        }
+        
+        // Inicializar selector de tipo de trampa
+        function initTrapTypeSelector() {
+            const trapTAE = document.getElementById('trapTAE');
+            const trapTAI = document.getElementById('trapTAI');
+            
+            trapTAE.addEventListener('click', function() {
+                selectedType = 'TAE';
+                trapTAE.classList.add('active');
+                trapTAI.classList.remove('active');
+            });
+            
+            trapTAI.addEventListener('click', function() {
+                selectedType = 'TAI';
+                trapTAI.classList.add('active');
+                trapTAE.classList.remove('active');
+            });
+        }
+        
+        // Inicializar opciones de color
+        function initColorOptions() {
+            const colorOptions = document.getElementById('colorOptions');
+            const colors = [
+                'red', 'blue', 'green', 'yellow', 'orange',
+                'purple', 'pink', 'brown', 'black', 'gray'
+            ];
+            
+            colors.forEach(color => {
+                const option = document.createElement('div');
+                option.className = 'color-option';
+                if (color === flagColor) option.classList.add('selected');
+                option.style.backgroundColor = color;
+                option.dataset.color = color;
+                
+                option.addEventListener('click', function() {
+                    // Deseleccionar todos
+                    document.querySelectorAll('.color-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    // Seleccionar este
+                    this.classList.add('selected');
+                    flagColor = this.dataset.color;
+                });
+                
+                colorOptions.appendChild(option);
+            });
+        }
+        
+        // Inicializar opciones de forma (solo línea ahora)
+        function initShapeOptions() {
+            // Solo tenemos la opción de línea ahora
+            flagShape = 'line';
+        }
+        
+        // Inicializar opciones de entrada
+        function initEntranceOptions() {
+            const entranceOptions = document.querySelectorAll('.entrance-option');
+            
+            entranceOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Deseleccionar todos
+                    document.querySelectorAll('.entrance-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    // Seleccionar este
+                    this.classList.add('selected');
+                    entranceSide = this.dataset.side;
+                });
+            });
+        }
+        
+        // Inicializar opciones de centro de carga
+        function initChargingOptions() {
+            const chargingOptions = document.querySelectorAll('.charging-option');
+            
+            chargingOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Deseleccionar todos
+                    document.querySelectorAll('.charging-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    // Seleccionar este
+                    this.classList.add('selected');
+                    chargingSide = this.dataset.side;
+                });
+            });
+        }
+        
+        // Crear capillas en los invernaderos
+        function createChapels() {
+            // Ya no creamos capillas, solo agregamos las etiquetas Norte y Sur
+            for (let i = 1; i <= 4; i++) {
+                const northSide = document.getElementById(`north${i}`);
+                const southSide = document.getElementById(`south${i}`);
+                
+                // Agregar etiquetas Norte y Sur
+                const northLabel = document.createElement('div');
+                northLabel.className = 'north-label';
+                northLabel.textContent = 'NORTE';
+                northSide.appendChild(northLabel);
+                
+                const southLabel = document.createElement('div');
+                southLabel.className = 'south-label';
+                southLabel.textContent = 'SUR';
+                southSide.appendChild(southLabel);
+            }
+        }
+        
+        // Inicializar títulos de módulos editables
+        function initModuleTitles() {
+            const titleInputs = document.querySelectorAll('.module-title-input');
+            
+            titleInputs.forEach(input => {
+                const moduleNum = input.dataset.module;
+                input.value = moduleTitles[moduleNum];
+                
+                input.addEventListener('change', function() {
+                    moduleTitles[moduleNum] = this.value;
+                });
+                
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+            });
+        }
+        
+        // Crear tablas para registro de TAI (completamente manual)
+        function createTAITables() {
+            for (let i = 1; i <= 4; i++) {
+                const table = document.getElementById(`taiTable${i}`).getElementsByTagName('tbody')[0];
+                
+                // Crear 10 filas (para 10 trampas por invernadero)
+                for (let j = 1; j <= 10; j++) {
+                    const row = document.createElement('tr');
+                    
+                    // Columna de número
+                    const numCell = document.createElement('td');
+                    numCell.textContent = j;
+                    row.appendChild(numCell);
+                    
+                    // Columna de nombre de trampa - INPUT EDITABLE
+                    const nameCell = document.createElement('td');
+                    const nameInput = document.createElement('input');
+                    nameInput.type = 'text';
+                    nameInput.placeholder = 'TAI01';
+                    nameInput.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                    nameCell.appendChild(nameInput);
+                    row.appendChild(nameCell);
+                    
+                    // Columna de ubicación - INPUT EDITABLE
+                    const locationCell = document.createElement('td');
+                    const locationInput = document.createElement('input');
+                    locationInput.type = 'text';
+                    locationInput.placeholder = 'Ubicación';
+                    locationInput.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                    locationCell.appendChild(locationInput);
+                    row.appendChild(locationCell);
+                    
+                    // Marcar fila como activa cuando se escribe en cualquier campo
+                    const markAsActive = function() {
+                        if (nameInput.value !== '' || locationInput.value !== '') {
+                            row.classList.add('active');
+                        } else {
+                            row.classList.remove('active');
+                        }
+                    };
+                    
+                    nameInput.addEventListener('input', markAsActive);
+                    locationInput.addEventListener('input', markAsActive);
+                    
+                    table.appendChild(row);
+                }
+            }
+        }
+        
+        // Actualizar entrada del acopio
+        function updateEntrance() {
+            // Remover clase active de todas las entradas
+            document.querySelectorAll('.entrance').forEach(entrance => {
+                entrance.classList.remove('active');
+            });
+            
+            // Agregar clase active a la entrada seleccionada
+            const selectedEntrance = document.querySelector(`.entrance[data-side="${entranceSide}"]`);
+            if (selectedEntrance) {
+                selectedEntrance.classList.add('active');
+            }
+        }
+        
+        // Actualizar centro de carga
+        function updateChargingCenter() {
+            // Remover clase active de todos los centros de carga
+            document.querySelectorAll('.charging-center').forEach(center => {
+                center.classList.remove('active');
+            });
+            
+            // Agregar clase active al centro de carga seleccionado
+            const selectedCenter = document.querySelector(`.charging-center[data-side="${chargingSide}"]`);
+            if (selectedCenter) {
+                selectedCenter.classList.add('active');
+            }
+        }
+        
+        // Actualizar nombres de módulos
+        function updateModuleNames() {
+            document.getElementById('storageName').textContent = moduleNames.storage;
+            document.getElementById('gh1Label').textContent = moduleNames.gh1;
+            document.getElementById('gh2Label').textContent = moduleNames.gh2;
+            document.getElementById('gh3Label').textContent = moduleNames.gh3;
+            document.getElementById('gh4Label').textContent = moduleNames.gh4;
+        }
+        
+        // Crear conexiones entre acopio e invernaderos
+        function createConnections() {
+            const connectionsContainer = document.getElementById('connections');
+            const storage = document.getElementById('storage');
+            const greenhouses = [
+                document.getElementById('greenhouse1'),
+                document.getElementById('greenhouse2'),
+                document.getElementById('greenhouse3'),
+                document.getElementById('greenhouse4')
+            ];
+            
+            const storageRect = storage.getBoundingClientRect();
+            const containerRect = connectionsContainer.getBoundingClientRect();
+            
+            // Posición central del acopio relativa al contenedor
+            const storageCenterX = storageRect.left + storageRect.width/2 - containerRect.left;
+            const storageCenterY = storageRect.top + storageRect.height/2 - containerRect.top;
+            
+            greenhouses.forEach((gh, index) => {
+                const ghRect = gh.getBoundingClientRect();
+                const ghCenterX = ghRect.left + ghRect.width/2 - containerRect.left;
+                const ghCenterY = ghRect.top + ghRect.height/2 - containerRect.top;
+                
+                // Calcular distancia y ángulo
+                const dx = ghCenterX - storageCenterX;
+                const dy = ghCenterY - storageCenterY;
+                const length = Math.sqrt(dx*dx + dy*dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                // Crear elemento de conexión
+                const connection = document.createElement('div');
+                connection.className = 'connection';
+                connection.style.width = `${length}px`;
+                connection.style.left = `${storageCenterX}px`;
+                connection.style.top = `${storageCenterY}px`;
+                connection.style.transform = `rotate(${angle}deg)`;
+                
+                connectionsContainer.appendChild(connection);
+            });
+        }
+        
+        // Función para agregar banderitas (ahora en forma de línea)
+        function addFlag(event) {
+            if (editMode) return; // No agregar nuevas si estamos en modo edición
+            
+            // Crear elemento de banderita (ahora como línea)
+            const flag = document.createElement('div');
+            flag.className = 'flag';
+            
+            // Crear la línea
+            const flagLine = document.createElement('div');
+            flagLine.className = 'flag-line';
+            flagLine.style.backgroundColor = flagColor;
+            
+            // Obtener el número para este tipo
+            const flagNumber = flagCounters[selectedType];
+            
+            // Determinar el módulo según dónde se colocó la banderita
+            let module = 'X'; // Por defecto
+            const targetId = event.currentTarget.id;
+            
+            if (targetId.includes('greenhouse')) {
+                module = targetId.replace('greenhouse', '');
+            } else if (targetId.includes('perimeter')) {
+                module = 'P' + targetId.replace('perimeter', '');
+            } else if (targetId === 'storage') {
+                module = 'S';
+            } else if (targetId.includes('north') || targetId.includes('south')) {
+                // Es un lado del invernadero
+                const greenhouseNum = targetId.replace('north', '').replace('south', '');
+                const side = targetId.includes('north') ? 'N' : 'S';
+                module = `G${greenhouseNum}${side}`;
+            }
+            
+            // Crear el texto de la banderita (ej: TAE01 o TAI01)
+            const flagCode = `${selectedType}${flagNumber.toString().padStart(2, '0')}`;
+            
+            // Crear el texto
+            const flagText = document.createElement('div');
+            flagText.className = 'flag-text';
+            if (highContrast) flagText.classList.add('contrast');
+            flagText.textContent = flagCode;
+            flagText.dataset.module = module;
+            flagText.dataset.type = selectedType;
+            flagText.dataset.number = flagNumber;
+            
+            // Incrementar el contador para este tipo (de uno en uno)
+            flagCounters[selectedType] = flagNumber + 1;
+            
+            // Posicionar la banderita donde se hizo clic (coordenadas absolutas de la página)
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+            const x = event.clientX - containerRect.left;
+            const y = event.clientY - containerRect.top;
+            
+            flag.style.left = `${x}px`;
+            flag.style.top = `${y}px`;
+            
+            // Ensamblar la banderita
+            flag.appendChild(flagText);
+            flag.appendChild(flagLine);
+            
+            // Agregar la banderita al contenedor principal (no al área específica)
+            container.appendChild(flag);
+            
+            // Hacer que las banderitas sean arrastrables
+            makeFlagDraggable(flag);
+            
+            // Agregar funcionalidad de rotación
+            makeFlagRotatable(flag);
+        }
+        
+        // Hacer las banderitas arrastrables
+        function makeFlagDraggable(flag) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            flag.onmousedown = dragMouseDown;
+            
+            function dragMouseDown(e) {
+                if (!editMode) return; // Solo arrastrar en modo edición
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Agregar clase para indicar que se está arrastrando
+                flag.classList.add('dragging');
+                
+                // Obtener la posición inicial del cursor
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+            
+            function elementDrag(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Calcular la nueva posición
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                
+                // Obtener posición actual
+                const container = document.querySelector('.container');
+                const containerRect = container.getBoundingClientRect();
+                
+                // Calcular nueva posición relativa al contenedor
+                const newLeft = flag.offsetLeft - pos1;
+                const newTop = flag.offsetTop - pos2;
+                
+                // Establecer la nueva posición
+                flag.style.left = `${newLeft}px`;
+                flag.style.top = `${newTop}px`;
+            }
+            
+            function closeDragElement() {
+                // Remover clase de arrastre
+                flag.classList.remove('dragging');
+                
+                // Detener el movimiento
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+        
+        // Hacer las banderitas rotables
+        function makeFlagRotatable(flag) {
+            const flagText = flag.querySelector('.flag-text');
+            
+            flagText.addEventListener('click', function(e) {
+                if (!editMode) return; // Solo rotar en modo edición
+                e.stopPropagation();
+                
+                // Alternar clase para indicar que está rotando
+                flag.classList.toggle('rotating');
+                
+                // Obtener la rotación actual
+                let currentRotation = 0;
+                const transform = flag.style.transform;
+                if (transform) {
+                    const match = transform.match(/rotate\(([-]?\d+)deg\)/);
+                    if (match) {
+                        currentRotation = parseInt(match[1]);
+                    }
+                }
+                
+                // Rotar 90 grados adicionales
+                const newRotation = (currentRotation + 90) % 360;
+                flag.style.transform = `rotate(${newRotation}deg)`;
+            });
+        }
+        
+        // Alternar modo edición
+        function toggleEditMode() {
+            editMode = !editMode;
+            const lockBtn = document.getElementById('lockBtn');
+            
+            if (editMode) {
+                lockBtn.classList.add('active');
+                lockBtn.title = "Modo edición activado - Solo mover y rotar";
+                // Aplicar clase rotating a todas las banderitas existentes
+                document.querySelectorAll('.flag').forEach(flag => {
+                    flag.classList.add('rotating');
+                });
+            } else {
+                lockBtn.classList.remove('active');
+                lockBtn.title = "Bloquear/Editar trampas";
+                // Remover clase rotating de todas las banderitas
+                document.querySelectorAll('.flag').forEach(flag => {
+                    flag.classList.remove('rotating');
+                });
+            }
+        }
+        
+        // Aplicar ajustes
+        function applySettings() {
+            // Actualizar nombres de módulos
+            moduleNames.storage = document.getElementById('acopioName').value;
+            moduleNames.gh1 = document.getElementById('gh1Name').value;
+            moduleNames.gh2 = document.getElementById('gh2Name').value;
+            moduleNames.gh3 = document.getElementById('gh3Name').value;
+            moduleNames.gh4 = document.getElementById('gh4Name').value;
+            
+            updateModuleNames();
+            
+            // Actualizar todas las banderitas existentes
+            const flags = document.querySelectorAll('.flag');
+            flags.forEach(flag => {
+                // Actualizar color de la línea
+                const flagLine = flag.querySelector('.flag-line');
+                if (flagLine) {
+                    flagLine.style.backgroundColor = flagColor;
+                }
+                
+                // Actualizar contraste del texto
+                const flagText = flag.querySelector('.flag-text');
+                if (flagText) {
+                    if (highContrast) {
+                        flagText.classList.add('contrast');
+                    } else {
+                        flagText.classList.remove('contrast');
+                    }
+                }
+            });
+            
+            // Actualizar entrada y centro de carga
+            updateEntrance();
+            updateChargingCenter();
+            
+            // Cerrar panel de ajustes
+            closeSettingsPanel();
+        }
+        
+        // Abrir panel de ajustes
+        function openSettingsPanel() {
+            document.getElementById('settingsPanel').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+        
+        // Cerrar panel de ajustes
+        function closeSettingsPanel() {
+            document.getElementById('settingsPanel').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+        
+        // Guardar como imagen
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            html2canvas(document.querySelector('.container'), {
+                scale: 2, // Mejor calidad
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                // Crear un enlace para descargar la imagen
+                const link = document.createElement('a');
+                link.download = 'croquis-trampas-invernadero.png';
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            });
+        });
+        
+        // Limpiar todas las banderitas
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            const flags = document.querySelectorAll('.flag');
+            flags.forEach(flag => flag.remove());
+            
+            // Limpiar también las tablas TAI
+            document.querySelectorAll('.tai-table-content tbody tr').forEach(row => {
+                row.classList.remove('active');
+                const inputs = row.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.value = '';
+                });
+            });
+            
+            // Reiniciar contadores (de uno en uno)
+            for (let type in flagCounters) {
+                flagCounters[type] = 1;
+            }
+        });
+        
+        // Alternar alto contraste
+        document.getElementById('contrastBtn').addEventListener('click', function() {
+            highContrast = !highContrast;
+            
+            // Actualizar todas las banderitas
+            const flagTexts = document.querySelectorAll('.flag-text');
+            flagTexts.forEach(text => {
+                if (highContrast) {
+                    text.classList.add('contrast');
+                } else {
+                    text.classList.remove('contrast');
+                }
+            });
+            
+            // Actualizar el texto del botón
+            this.textContent = highContrast ? 'Contraste Normal' : 'Alto Contraste';
+        });
+        
+        // Imprimir
+        document.getElementById('printBtn').addEventListener('click', function() {
+            window.print();
+        });
+        
+        // Inicializar la aplicación
+        function init() {
+            initTrapTypeSelector();
+            initColorOptions();
+            initShapeOptions();
+            initEntranceOptions();
+            initChargingOptions();
+            createChapels();
+            initModuleTitles();
+            createTAITables();
+            updateEntrance();
+            updateChargingCenter();
+            updateModuleNames();
+            
+            // Generar y mostrar fecha aleatoria
+            const randomDate = generateRandomDate();
+            document.getElementById('randomDate').textContent = randomDate;
+            
+            // Agregar event listeners a todas las áreas
+            const areas = [
+                document.getElementById('storage'),
+                document.getElementById('greenhouse1'),
+                document.getElementById('greenhouse2'),
+                document.getElementById('greenhouse3'),
+                document.getElementById('greenhouse4'),
+                document.getElementById('perimeter1'),
+                document.getElementById('perimeter2'),
+                document.getElementById('perimeter3'),
+                document.getElementById('perimeter4'),
+                document.getElementById('north1'),
+                document.getElementById('south1'),
+                document.getElementById('north2'),
+                document.getElementById('south2'),
+                document.getElementById('north3'),
+                document.getElementById('south3'),
+                document.getElementById('north4'),
+                document.getElementById('south4')
+            ];
+            
+            areas.forEach(area => {
+                area.addEventListener('click', addFlag);
+            });
+            
+            // Configurar botón de bloqueo/edición
+            document.getElementById('lockBtn').addEventListener('click', toggleEditMode);
+            
+            // Configurar botones de ajustes
+            document.getElementById('settingsBtn').addEventListener('click', openSettingsPanel);
+            document.getElementById('applySettings').addEventListener('click', applySettings);
+            document.getElementById('closeSettings').addEventListener('click', closeSettingsPanel);
+            document.getElementById('overlay').addEventListener('click', closeSettingsPanel);
+            
+            // Crear conexiones después de un breve delay para asegurar que los elementos estén renderizados
+            setTimeout(createConnections, 100);
+            
+            // Hacer que las banderitas existentes sean editables
+            setTimeout(() => {
+                document.querySelectorAll('.flag').forEach(flag => {
+                    makeFlagDraggable(flag);
+                    makeFlagRotatable(flag);
+                });
+            }, 200);
+        }
+        
+        // Ejecutar inicialización cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

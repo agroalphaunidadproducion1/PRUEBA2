@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Rutas Ordenadas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            margin-top: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 2rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(to right, #4A00E0, #8E2DE2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .fila-rutas {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .fila-rutas h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            color: #2c3e50;
+        }
+        
+        .norte h2 {
+            color: #3498db;
+        }
+        
+        .sur h2 {
+            color: #e74c3c;
+        }
+        
+        .rutas-horizontal {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .ruta-item {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 130px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .sur .ruta-item {
+            border-left-color: #e74c3c;
+        }
+        
+        .ruta-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+            background: #e9ecef;
+        }
+        
+        .copiado {
+            background: #d4edda !important;
+            border-left-color: #28a745 !important;
+            transform: scale(1.05);
+        }
+        
+        .area-copy {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .area-copy h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: none;
+        }
+        
+        .botones-copia {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .copiar-todo {
+            background: linear-gradient(to right, #28a745, #20c997);
+            flex: 1;
+        }
+        
+        .copiar-norte {
+            background: linear-gradient(to right, #3498db, #2980b9);
+        }
+        
+        .copiar-sur {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+        }
+        
+        .instrucciones {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .instrucciones h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .instrucciones ul {
+            padding-left: 20px;
+        }
+        
+        .instrucciones li {
+            margin-bottom: 8px;
+        }
+        
+        .info-orden {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generador de Rutas Ordenadas</h1>
+    <p class="subtitle">5 rutas Norte y 5 rutas Sur - Ordenadas de menor a mayor</p>
+    
+    <div class="container">
+        <div class="controls">
+            <button id="generarRutas">Generar Nuevas Rutas</button>
+        </div>
+        
+        <div class="fila-rutas norte">
+            <h2>Lado Norte (5 rutas ordenadas)</h2>
+            <div class="rutas-horizontal" id="rutasNorte">
+                <!-- Las rutas norte se generarán aquí -->
+            </div>
+            <p class="info-orden">Ordenadas por número de capacidad de menor a mayor</p>
+        </div>
+        
+        <div class="fila-rutas sur">
+            <h2>Lado Sur (5 rutas ordenadas)</h2>
+            <div class="rutas-horizontal" id="rutasSur">
+                <!-- Las rutas sur se generarán aquí -->
+            </div>
+            <p class="info-orden">Ordenadas por número de capacidad de menor a mayor</p>
+        </div>
+        
+        <div class="area-copy">
+            <h3>Texto para copiar (Formato Excel)</h3>
+            <textarea id="textoParaCopiar" readonly></textarea>
+            <div class="botones-copia">
+                <button class="copiar-norte" id="copiarNorte">Copiar Norte</button>
+                <button class="copiar-sur" id="copiarSur">Copiar Sur</button>
+                <button class="copiar-todo" id="copiarTodo">Copiar Todo</button>
+            </div>
+        </div>
+        
+        <div class="instrucciones">
+            <h3>Instrucciones:</h3>
+            <ul>
+                <li>Las rutas se generan automáticamente ordenadas de menor a mayor</li>
+                <li>Haz clic en cualquier ruta individual para copiarla</li>
+                <li>Usa los botones para copiar Norte, Sur o todas las rutas</li>
+                <li>Pega directamente en Excel - cada ruta irá en una celda separada</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Función para generar un número aleatorio entre min y max
+        function numeroAleatorio(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Función para ordenar rutas por número de capacidad
+        function ordenarRutas(rutas) {
+            return rutas.sort((a, b) => {
+                // Extraer el número de capacidad de la cadena (después de "Cap. #")
+                const numA = parseInt(a.texto.split('#')[1].split(' ')[0]);
+                const numB = parseInt(b.texto.split('#')[1].split(' ')[0]);
+                return numA - numB;
+            });
+        }
+
+        // Función para generar rutas aleatorias ordenadas
+        function generarRutasAleatorias() {
+            const rutasNorte = [];
+            const rutasSur = [];
+            
+            // Generar 5 rutas únicas para el Norte
+            const capacidadesNorte = new Set();
+            while (capacidadesNorte.size < 5) {
+                capacidadesNorte.add(numeroAleatorio(1, 18));
+            }
+            
+            Array.from(capacidadesNorte).forEach(capacidad => {
+                const cama = numeroAleatorio(1, 8);
+                rutasNorte.push({
+                    texto: `Cap. #${capacidad.toString().padStart(2, '0')} N/${cama}`
+                });
+            });
+            
+            // Generar 5 rutas únicas para el Sur
+            const capacidadesSur = new Set();
+            while (capacidadesSur.size < 5) {
+                capacidadesSur.add(numeroAleatorio(1, 18));
+            }
+            
+            Array.from(capacidadesSur).forEach(capacidad => {
+                const cama = numeroAleatorio(1, 8);
+                rutasSur.push({
+                    texto: `Cap. #${capacidad.toString().padStart(2, '0')} S/${cama}`
+                });
+            });
+            
+            // Ordenar ambas listas
+            return {
+                norte: ordenarRutas(rutasNorte),
+                sur: ordenarRutas(rutasSur)
+            };
+        }
+
+        // Función para mostrar las rutas en la interfaz
+        function mostrarRutas(rutas) {
+            const rutasNorte = document.getElementById('rutasNorte');
+            const rutasSur = document.getElementById('rutasSur');
+            
+            // Limpiar contenedores
+            rutasNorte.innerHTML = '';
+            rutasSur.innerHTML = '';
+            
+            // Mostrar rutas Norte ordenadas
+            rutas.norte.forEach((ruta, index) => {
+                const elemento = document.createElement('div');
+                elemento.className = 'ruta-item';
+                elemento.textContent = ruta.texto;
+                elemento.title = `Haz clic para copiar: ${ruta.texto}`;
+                elemento.addEventListener('click', function() {
+                    copiarTexto(ruta.texto, elemento);
+                });
+                rutasNorte.appendChild(elemento);
+            });
+            
+            // Mostrar rutas Sur ordenadas
+            rutas.sur.forEach((ruta, index) => {
+                const elemento = document.createElement('div');
+                elemento.className = 'ruta-item';
+                elemento.textContent = ruta.texto;
+                elemento.title = `Haz clic para copiar: ${ruta.texto}`;
+                elemento.addEventListener('click', function() {
+                    copiarTexto(ruta.texto, elemento);
+                });
+                rutasSur.appendChild(elemento);
+            });
+            
+            // Actualizar área de texto
+            actualizarAreaTexto(rutas);
+        }
+
+        // Función para copiar texto al portapapeles
+        function copiarTexto(texto, elemento) {
+            navigator.clipboard.writeText(texto).then(() => {
+                // Efecto visual de copiado
+                elemento.classList.add('copiado');
+                setTimeout(() => {
+                    elemento.classList.remove('copiado');
+                }, 1000);
+            });
+        }
+
+        // Función para actualizar el área de texto
+        function actualizarAreaTexto(rutas) {
+            const textoArea = document.getElementById('textoParaCopiar');
+            let textoCompleto = '';
+            
+            // Agregar rutas Norte ordenadas
+            rutas.norte.forEach(ruta => {
+                textoCompleto += ruta.texto + '\n';
+            });
+            
+            // Agregar rutas Sur ordenadas
+            rutas.sur.forEach(ruta => {
+                textoCompleto += ruta.texto + '\n';
+            });
+            
+            textoArea.value = textoCompleto;
+        }
+
+        // Generar rutas iniciales
+        let rutasActuales = generarRutasAleatorias();
+        mostrarRutas(rutasActuales);
+
+        // Asignar eventos a los botones
+        document.getElementById('generarRutas').addEventListener('click', function() {
+            rutasActuales = generarRutasAleatorias();
+            mostrarRutas(rutasActuales);
+        });
+
+        document.getElementById('copiarNorte').addEventListener('click', function() {
+            const textoNorte = rutasActuales.norte.map(ruta => ruta.texto).join('\n');
+            navigator.clipboard.writeText(textoNorte);
+            alert('Rutas Norte ordenadas copiadas al portapapeles');
+        });
+
+        document.getElementById('copiarSur').addEventListener('click', function() {
+            const textoSur = rutasActuales.sur.map(ruta => ruta.texto).join('\n');
+            navigator.clipboard.writeText(textoSur);
+            alert('Rutas Sur ordenadas copiadas al portapapeles');
+        });
+
+        document.getElementById('copiarTodo').addEventListener('click', function() {
+            const textoArea = document.getElementById('textoParaCopiar');
+            textoArea.select();
+            navigator.clipboard.writeText(textoArea.value);
+            alert('Todas las rutas ordenadas copiadas al portapapeles');
+        });
+    </script>
+</body>
+</html>
