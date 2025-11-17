@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes de Asistencia Semanal - Agro Alpha</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+            --admin-color: #2196F3;
+            --grower-junior-color: #FF9800;
+            --digitador-color: #9C27B0;
+            --tecnico-color: #607D8B;
+            --supervisor-color: #FF5722;
+            --invitado-color: #9E9E9E;
+            --gerente-general-color: #E91E63;
+            --gerente-produccion-color: #3F51B5;
+            --jefe-vivero-color: #009688;
+            --error-color: #f44336;
+            --light-gray: #f5f5f5;
+            --white: #ffffff;
+            --dark-gray: #000000;
+            --sidebar-bg: #2c3e50;
+            --sidebar-hover: #34495e;
+            --sidebar-active: #3498db;
+            
+            /* Colores para niveles de severidad */
+            --bajo-color: #4CAF50;
+            --medio-color: #FF9800;
+            --alto-color: #f44336;
+            
+            /* Colores para estados */
+            --activo-color: #4CAF50;
+            --liberado-color: #9E9E9E;
+            
+            /* Colores específicos para reportes */
+            --chile-color: #2e7d32;
+            --tomate-color: #c62828;
+            --otras-areas-color: #6f42c1;
+            --light-bg: #f1f8e9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-gray);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            min-height: calc(100vh - 140px);
+        }
+
+        .container {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .card {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: none;
+        }
+        
+        .card-header {
+            border-radius: 8px 8px 0 0 !important;
+            font-weight: 600;
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--invitado-color);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+
+        .btn-view-mode {
+            background-color: var(--light-gray);
+            border: 1px solid #dee2e6;
+            color: var(--dark-gray);
+            padding: 6px 12px;
+            margin-right: 5px;
+        }
+
+        .btn-view-mode.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table td {
+            padding: 8px;
+            font-size: 0.85rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .percentage-cell {
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .count-cell {
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .high-percentage {
+            color: #28a745;
+        }
+
+        .medium-percentage {
+            color: #ffc107;
+        }
+
+        .low-percentage {
+            color: var(--error-color);
+        }
+
+        .date-filter {
+            background-color: #e8f5e9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .view-mode-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .cultivo-card {
+            transition: all 0.3s ease;
+        }
+
+        .cultivo-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .day-column {
+            font-weight: bold;
+            min-width: 60px;
+        }
+
+        .week-total {
+            background-color: #e8f5e9;
+            font-weight: bold;
+        }
+
+        .inv-header {
+            min-width: 70px;
+            font-weight: bold;
+        }
+
+        .no-data {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .no-attendance {
+            color: #ccc;
+            font-style: italic;
+        }
+
+        .total-row {
+            background-color: var(--light-gray);
+            font-weight: bold;
+        }
+
+        .summary-container {
+            margin-top: 20px;
+            border-top: 2px solid #e9ecef;
+            padding-top: 15px;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            margin-right: 10px;
+        }
+
+        /* Tooltip para mostrar detalles */
+        .count-tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        /* Estilo para celdas combinadas de promedio */
+        .combined-average {
+            background-color: #e3f2fd !important;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header p.lead {
+                font-size: 0.9rem;
+            }
+
+            .table-responsive {
+                font-size: 0.8rem;
+            }
+
+            .day-column {
+                min-width: 50px;
+                font-size: 0.75rem;
+                padding: 5px 3px;
+            }
+
+            .inv-header {
+                min-width: 60px;
+                font-size: 0.75rem;
+            }
+
+            .table th, .table td {
+                padding: 6px 4px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            .card-header h5 {
+                font-size: 0.95rem;
+            }
+
+            .view-mode-container {
+                justify-content: flex-start;
+                margin-top: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header {
+                padding: 15px 0;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+                font-size: 0.7rem;
+            }
+
+            .day-column {
+                min-width: 45px;
+                font-size: 0.7rem;
+                padding: 4px 2px;
+            }
+
+            .inv-header {
+                min-width: 50px;
+                font-size: 0.7rem;
+            }
+
+            .table th, .table td {
+                padding: 4px 2px;
+            }
+
+            .percentage-cell, .count-cell {
+                font-size: 0.75rem;
+            }
+
+            .date-filter {
+                padding: 10px;
+            }
+
+            .btn-view-mode {
+                padding: 4px 8px;
+                font-size: 0.8rem;
+            }
+
+            .combined-average {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="dashboard.html">Inicio</a> > <a href="reportes.html">Reportes</a> > Asistencia Semanal
+            </div>
+            
+            <div class="header text-center">
+                <h1><i class="fas fa-chart-bar me-2"></i>Reportes de Asistencia Semanal</h1>
+            </div>
+
+            <!-- Selector de semana -->
+            <div class="date-filter">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="semana-select" class="form-label"><strong>Seleccione la semana del año:</strong></label>
+                        <select class="form-select" id="semana-select">
+                            <option value="">Cargando semanas...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><strong>Rango de fechas:</strong></label>
+                        <div id="rango-fechas" class="form-control" style="background-color: white; height: 38px; display: flex; align-items: center;">
+                            Cargando...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenedor para botones de modo de visualización -->
+            <div class="view-mode-container">
+                <div class="btn-group" role="group" aria-label="Modo de visualización">
+                    <button type="button" id="btn-porcentajes" class="btn btn-view-mode active">
+                        <i class="fas fa-percentage me-1"></i> Porcentajes
+                    </button>
+                    <button type="button" id="btn-numeros" class="btn btn-view-mode">
+                        <i class="fas fa-users me-1"></i> Números
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reporte Detallado Chile -->
+            <div class="card">
+                <div class="card-header" style="background-color: var(--chile-color);">
+                    <h5 class="mb-0"><i class="fas fa-table me-2"></i>Reporte Detallado - Chile</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="inv-header">Inv</th>
+                                    <!-- Los encabezados de días se generarán dinámicamente -->
+                                </tr>
+                            </thead>
+                            <tbody id="chile-table-body">
+                                <tr>
+                                    <td colspan="8" class="text-center loading">
+                                        <div class="spinner-border" style="color: var(--chile-color);" role="status"></div>
+                                        Cargando datos de asistencia...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reporte Detallado Tomate -->
+            <div class="card mt-4">
+                <div class="card-header" style="background-color: var(--tomate-color);">
+                    <h5 class="mb-0"><i class="fas fa-table me-2"></i>Reporte Detallado - Tomate</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="inv-header">Inv</th>
+                                    <!-- Los encabezados de días se generarán dinámicamente -->
+                                </tr>
+                            </thead>
+                            <tbody id="tomate-table-body">
+                                <tr>
+                                    <td colspan="8" class="text-center loading">
+                                        <div class="spinner-border" style="color: var(--tomate-color);" role="status"></div>
+                                        Cargando datos de asistencia...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reporte Detallado Otras Áreas -->
+            <div class="card mt-4">
+                <div class="card-header" style="background-color: var(--otras-areas-color);">
+                    <h5 class="mb-0"><i class="fas fa-table me-2"></i>Reporte Detallado - Otras Áreas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="inv-header">Área</th>
+                                    <!-- Los encabezados de días se generarán dinámicamente -->
+                                </tr>
+                            </thead>
+                            <tbody id="otras-areas-table-body">
+                                <tr>
+                                    <td colspan="8" class="text-center loading">
+                                        <div class="spinner-border" style="color: var(--otras-areas-color);" role="status"></div>
+                                        Cargando datos de asistencia...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESUMEN SEMANAL GENERAL -->
+            <div class="card mt-4">
+                <div class="card-header" style="background-color: var(--admin-color);">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Resumen Semanal General</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Resumen Chile -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card cultivo-card h-100">
+                                <div class="card-header" style="background-color: var(--chile-color);">
+                                    <h5 class="mb-0 text-white"><i class="fas fa-pepper-hot me-2"></i>Chile</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center">
+                                        <div class="col-12 mb-3">
+                                            <h6>Promedio Semanal</h6>
+                                            <h2 id="chile-promedio">0%</h2>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Día</th>
+                                                    <th>Asistencia</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="chile-resumen">
+                                                <tr><td colspan="2" class="text-center">Cargando...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Resumen Tomate -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card cultivo-card h-100">
+                                <div class="card-header" style="background-color: var(--tomate-color);">
+                                    <h5 class="mb-0 text-white"><i class="fas fa-apple-alt me-2"></i>Tomate</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center">
+                                        <div class="col-12 mb-3">
+                                            <h6>Promedio Semanal</h6>
+                                            <h2 id="tomate-promedio">0%</h2>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Día</th>
+                                                    <th>Asistencia</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tomate-resumen">
+                                                <tr><td colspan="2" class="text-center">Cargando...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Resumen Otras Áreas -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card cultivo-card h-100">
+                                <div class="card-header" style="background-color: var(--otras-areas-color);">
+                                    <h5 class="mb-0 text-white"><i class="fas fa-tools me-2"></i>Otras Áreas</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center">
+                                        <div class="col-12 mb-3">
+                                            <h6>Promedio Semanal</h6>
+                                            <h2 id="otras-areas-promedio">0%</h2>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Día</th>
+                                                    <th>Asistencia</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="otras-areas-resumen">
+                                                <tr><td colspan="2" class="text-center">Cargando...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Database -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // Configuración de Firebase con tu URL
+        const firebaseConfig = {
+            databaseURL: "https://agro-productos-default-rtdb.firebaseio.com"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Referencias a las tablas
+        const personalRef = database.ref('personal');
+        const attendanceRef = database.ref('asistencia');
+
+        // Definir invernaderos por cultivo (actualizado con las nuevas áreas)
+        const chileInvernaderos = ['9', '10', '11', '12', '33', '35', '37', '39'];
+        const tomateInvernaderos = ['13', '14', '15', '16', 'Viv']; // Viv movido a tomate
+        const otrasAreas = ['Mantenimiento', 'Fitosanidad', 'Riego', 'Vivero']; // Actualizado con las nuevas áreas
+
+        // Días de la semana (abreviados)
+        const diasSemana = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+        // Variables globales
+        let allEmployees = [];
+        let weekData = {};
+        let currentWeekDates = [];
+        let availableWeekDates = []; // Fechas que realmente existen en Firebase
+        let viewMode = 'percentage'; // 'percentage' o 'count'
+        let currentWeekNumber = 0;
+
+        // Mapeo de nombres abreviados a nombres completos
+        const areaNameMapping = {
+            'Viv': 'Vivero',
+            'MT': 'Mantenimiento',
+            'AV': 'Áreas Verdes',
+            'Fito': 'Fitosanidad',
+            'Riego': 'Riego'
+        };
+
+        // Mapeo inverso de nombres completos a abreviados
+        const areaAbbreviationMapping = {
+            'Vivero': 'Viv',
+            'Mantenimiento': 'MT',
+            'Áreas Verdes': 'AV',
+            'Fitosanidad': 'Fito',
+            'Riego': 'Riego'
+        };
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar botones de modo de visualización
+            document.getElementById('btn-porcentajes').addEventListener('click', function() {
+                setViewMode('percentage');
+            });
+            
+            document.getElementById('btn-numeros').addEventListener('click', function() {
+                setViewMode('count');
+            });
+            
+            // Cargar datos iniciales
+            loadEmployees();
+            loadWeeksSelector().then(() => {
+                // Obtener la semana actual
+                const today = new Date();
+                currentWeekNumber = getWeekNumber(today);
+                
+                // Seleccionar automáticamente la semana actual
+                document.getElementById('semana-select').value = currentWeekNumber;
+                updateWeekDates(currentWeekNumber);
+                loadAttendanceData();
+            });
+        });
+
+        // Establecer modo de visualización
+        function setViewMode(mode) {
+            viewMode = mode;
+            
+            // Actualizar estado de botones
+            document.getElementById('btn-porcentajes').classList.toggle('active', mode === 'percentage');
+            document.getElementById('btn-numeros').classList.toggle('active', mode === 'count');
+            
+            // Volver a procesar y mostrar los datos
+            if (Object.keys(weekData).length > 0) {
+                processReportData();
+            }
+        }
+
+        // Cargar selector de semanas
+        function loadWeeksSelector() {
+            return new Promise((resolve) => {
+                const selector = document.getElementById('semana-select');
+                selector.innerHTML = '';
+                
+                // Obtener el año actual
+                const currentYear = new Date().getFullYear();
+                
+                // Generar opciones para las 52 semanas del año
+                for (let week = 1; week <= 52; week++) {
+                    const option = document.createElement('option');
+                    option.value = week;
+                    option.textContent = `Semana ${week} - ${currentYear}`;
+                    selector.appendChild(option);
+                }
+                
+                // Event listener para cuando se cambie la semana manualmente
+                selector.addEventListener('change', function() {
+                    updateWeekDates(this.value);
+                    loadAttendanceData();
+                });
+                
+                resolve();
+            });
+        }
+
+        // Actualizar rango de fechas al cambiar la semana
+        function updateWeekDates(weekNumber) {
+            if (!weekNumber) return;
+            
+            const year = new Date().getFullYear();
+            
+            // Obtener el primer día (lunes) de la semana
+            const firstDay = getFirstDayOfWeek(weekNumber, year);
+            
+            // Guardar las fechas de la semana (lunes a sábado)
+            currentWeekDates = [];
+            for (let i = 0; i < 6; i++) {
+                const date = new Date(firstDay);
+                date.setDate(firstDay.getDate() + i);
+                currentWeekDates.push(formatDate(date));
+            }
+            
+            // Mostrar el rango de fechas
+            const lastDay = new Date(firstDay);
+            lastDay.setDate(firstDay.getDate() + 5);
+            
+            const options = { day: '2-digit', month: '2-digit' };
+            const startFormatted = firstDay.toLocaleDateString('es-ES', options);
+            const endFormatted = lastDay.toLocaleDateString('es-ES', options);
+            
+            document.getElementById('rango-fechas').textContent = 
+                `${startFormatted} al ${endFormatted} de ${year}`;
+        }
+
+        // Obtener el número de semana de una fecha (formato ISO)
+        function getWeekNumber(date) {
+            date = new Date(date);
+            date.setHours(0, 0, 0, 0);
+            
+            // Thursday in current week decides the year.
+            date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+            
+            // January 4 is always in week 1.
+            const week1 = new Date(date.getFullYear(), 0, 4);
+            
+            // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+            return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+        }
+
+        // Obtener el primer día (lunes) de una semana específica
+        function getFirstDayOfWeek(week, year) {
+            const simple = new Date(year, 0, 1 + (week - 1) * 7);
+            const dayOfWeek = simple.getDay();
+            const ISOweekStart = simple;
+            
+            if (dayOfWeek <= 4) {
+                ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+            } else {
+                ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+            }
+            
+            return ISOweekStart;
+        }
+
+        // Formatear fecha como YYYY-MM-DD
+        function formatDate(date) {
+            const d = new Date(date);
+            let month = '' + (d.getMonth() + 1);
+            let day = '' + d.getDate();
+            const year = d.getFullYear();
+            
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            
+            return [year, month, day].join('-');
+        }
+
+        // Cargar empleados desde Firebase
+        function loadEmployees() {
+            personalRef.once('value').then((snapshot) => {
+                allEmployees = [];
+                snapshot.forEach((childSnapshot) => {
+                    const employee = childSnapshot.val();
+                    employee.id = childSnapshot.key;
+                    allEmployees.push(employee);
+                });
+            }).catch((error) => {
+                console.error('Error al cargar empleados:', error);
+                showError('Error al cargar los datos de empleados');
+            });
+        }
+
+        // Cargar datos de asistencia
+        function loadAttendanceData() {
+            weekData = {};
+            availableWeekDates = [];
+            
+            // Mostrar mensaje de carga
+            document.getElementById('chile-table-body').innerHTML = 
+                '<tr><td colspan="8" class="text-center loading"><div class="spinner-border" style="color: var(--chile-color);" role="status"></div>Cargando datos...</td></tr>';
+            
+            document.getElementById('tomate-table-body').innerHTML = 
+                '<tr><td colspan="8" class="text-center loading"><div class="spinner-border" style="color: var(--tomate-color);" role="status"></div>Cargando datos...</td></tr>';
+            
+            document.getElementById('otras-areas-table-body').innerHTML = 
+                '<tr><td colspan="8" class="text-center loading"><div class="spinner-border" style="color: var(--otras-areas-color);" role="status"></div>Cargando datos...</td></tr>';
+            
+            // Resetear resúmenes
+            resetSummaries();
+            
+            // Primero verificar qué fechas existen en la base de datos
+            const checkPromises = currentWeekDates.map(date => {
+                return attendanceRef.child(date).once('value').then(snapshot => {
+                    return snapshot.exists() ? date : null;
+                });
+            });
+            
+            Promise.all(checkPromises).then(existingDates => {
+                availableWeekDates = existingDates.filter(date => date !== null);
+                
+                if (availableWeekDates.length === 0) {
+                    showError('No hay datos de asistencia para esta semana');
+                    return;
+                }
+                
+                // Ahora cargar los datos de asistencia para las fechas que existen
+                const loadPromises = availableWeekDates.map(date => {
+                    return attendanceRef.child(date).once('value').then(snapshot => {
+                        if (snapshot.exists()) {
+                            const dateData = snapshot.val();
+                            weekData[date] = dateData;
+                        }
+                    });
+                });
+                
+                Promise.all(loadPromises).then(() => {
+                    processReportData();
+                }).catch(error => {
+                    console.error('Error al cargar datos de asistencia:', error);
+                    showError('Error al cargar los datos de asistencia');
+                });
+            }).catch(error => {
+                console.error('Error al verificar fechas existentes:', error);
+                showError('Error al verificar datos disponibles');
+            });
+        }
+
+        // Resetear resúmenes
+        function resetSummaries() {
+            document.getElementById('chile-promedio').textContent = '0%';
+            document.getElementById('tomate-promedio').textContent = '0%';
+            document.getElementById('otras-areas-promedio').textContent = '0%';
+            
+            document.getElementById('chile-resumen').innerHTML = 
+                '<tr><td colspan="2" class="text-center">Cargando...</td></tr>';
+            document.getElementById('tomate-resumen').innerHTML = 
+                '<tr><td colspan="2" class="text-center">Cargando...</td></tr>';
+            document.getElementById('otras-areas-resumen').innerHTML = 
+                '<tr><td colspan="2" class="text-center">Cargando...</td></tr>';
+        }
+
+        // Procesar datos para el reporte
+        function processReportData() {
+            // Inicializar estructura de datos para cada área/invernadero
+            const reportData = {};
+            
+            // Primero, inicializar todas las áreas
+            const allAreas = [...chileInvernaderos, ...tomateInvernaderos, ...otrasAreas];
+            allAreas.forEach(area => {
+                reportData[area] = {
+                    dailyAttendance: {},
+                    dailyTotals: {},
+                    weekTotal: 0,
+                    weekMax: 0,
+                    daysWithData: 0 // Contador de días con datos
+                };
+                
+                // Inicializar días (todos los días de la semana)
+                currentWeekDates.forEach(date => {
+                    reportData[area].dailyAttendance[date] = 0;
+                    reportData[area].dailyTotals[date] = 0;
+                });
+            });
+            
+            // Procesar cada fecha que tiene datos
+            availableWeekDates.forEach(date => {
+                if (weekData[date]) {
+                    Object.keys(weekData[date]).forEach(area => {
+                        // Verificar si el área está en nuestras listas
+                        let targetArea = area;
+                        
+                        // Mapear nombres de Firebase a nuestros nombres
+                        if (area === 'Vivero') targetArea = 'Viv';
+                        if (area === 'Mantenimiento') targetArea = 'MT';
+                        if (area === 'Áreas Verdes') targetArea = 'AV';
+                        if (area === 'Fitosanidad') targetArea = 'Fito';
+                        // Riego se mantiene igual
+                        
+                        if (allAreas.includes(targetArea)) {
+                            // Incrementar contador de días con datos para esta área
+                            reportData[targetArea].daysWithData++;
+                            
+                            // Guardar el total de empleados para este día e invernadero
+                            reportData[targetArea].dailyTotals[date] = Object.keys(weekData[date][area]).length;
+                            
+                            // Contar asistencia
+                            Object.keys(weekData[date][area]).forEach(employeeId => {
+                                if (weekData[date][area][employeeId] === true) {
+                                    reportData[targetArea].dailyAttendance[date]++;
+                                    reportData[targetArea].weekTotal++;
+                                }
+                            });
+                            
+                            // Sumar al máximo posible (empleados * días con datos)
+                            reportData[targetArea].weekMax += Object.keys(weekData[date][area]).length;
+                        }
+                    });
+                }
+            });
+            
+            // Generar reporte
+            generateReport(reportData);
+        }
+
+        // Generar el reporte visual
+        function generateReport(reportData) {
+            // Generar encabezados de tabla dinámicamente
+            generateTableHeaders();
+            
+            // Generar resúmenes por cultivo
+            generateCultivoSummaries(reportData);
+            
+            // Generar tablas detalladas
+            generateChileTable(reportData);
+            generateTomateTable(reportData);
+            generateOtrasAreasTable(reportData);
+            
+            // Agregar event listeners para mostrar detalles al hacer clic
+            addCellClickListeners();
+        }
+
+        // Generar encabezados de tabla dinámicamente
+        function generateTableHeaders() {
+            const chileHeader = document.querySelector('#chile-table-body').closest('.table').querySelector('thead tr');
+            const tomateHeader = document.querySelector('#tomate-table-body').closest('.table').querySelector('thead tr');
+            const otrasAreasHeader = document.querySelector('#otras-areas-table-body').closest('.table').querySelector('thead tr');
+            
+            // Limpiar encabezados existentes (excepto la primera celda)
+            while (chileHeader.children.length > 1) chileHeader.removeChild(chileHeader.lastChild);
+            while (tomateHeader.children.length > 1) tomateHeader.removeChild(tomateHeader.lastChild);
+            while (otrasAreasHeader.children.length > 1) otrasAreasHeader.removeChild(otrasAreasHeader.lastChild);
+            
+            // Agregar encabezados para TODOS los días de la semana
+            currentWeekDates.forEach((date, index) => {
+                const dayName = diasSemana[index];
+                
+                const th = document.createElement('th');
+                th.className = 'day-column';
+                th.textContent = dayName;
+                th.title = date; // Mostrar fecha completa al pasar el mouse
+                
+                chileHeader.appendChild(th.cloneNode(true));
+                tomateHeader.appendChild(th.cloneNode(true));
+                otrasAreasHeader.appendChild(th.cloneNode(true));
+            });
+            
+            // Agregar encabezado para el PROMEDIO TOTAL COMBINADO
+            const totalTh = document.createElement('th');
+            totalTh.className = 'day-column';
+            totalTh.textContent = 'Promedio Total';
+            totalTh.colSpan = 1;
+            
+            chileHeader.appendChild(totalTh.cloneNode(true));
+            tomateHeader.appendChild(totalTh.cloneNode(true));
+            otrasAreasHeader.appendChild(totalTh.cloneNode(true));
+        }
+
+        // Generar resúmenes por cultivo
+        function generateCultivoSummaries(reportData) {
+            let chileWeekTotal = 0;
+            let chileWeekMax = 0;
+            const chileDailyPercentages = {};
+            const chileDailyCounts = {};
+            
+            let tomateWeekTotal = 0;
+            let tomateWeekMax = 0;
+            const tomateDailyPercentages = {};
+            const tomateDailyCounts = {};
+            
+            let otrasAreasWeekTotal = 0;
+            let otrasAreasWeekMax = 0;
+            const otrasAreasDailyPercentages = {};
+            const otrasAreasDailyCounts = {};
+            
+            // Variables para calcular totales diarios
+            const chileDailyTotals = {};
+            const tomateDailyTotals = {};
+            const otrasAreasDailyTotals = {};
+            
+            // Inicializar días
+            currentWeekDates.forEach(date => {
+                chileDailyPercentages[date] = 0;
+                chileDailyCounts[date] = { present: 0, total: 0 };
+                tomateDailyPercentages[date] = 0;
+                tomateDailyCounts[date] = { present: 0, total: 0 };
+                otrasAreasDailyPercentages[date] = 0;
+                otrasAreasDailyCounts[date] = { present: 0, total: 0 };
+                
+                chileDailyTotals[date] = { totalPresent: 0, totalMax: 0 };
+                tomateDailyTotals[date] = { totalPresent: 0, totalMax: 0 };
+                otrasAreasDailyTotals[date] = { totalPresent: 0, totalMax: 0 };
+            });
+            
+            // Procesar invernaderos de chile
+            chileInvernaderos.forEach(inv => {
+                if (reportData[inv]) {
+                    chileWeekTotal += reportData[inv].weekTotal;
+                    chileWeekMax += reportData[inv].weekMax;
+                    
+                    currentWeekDates.forEach(date => {
+                        // Acumular para el total diario
+                        if (reportData[inv].dailyTotals[date] > 0) {
+                            chileDailyTotals[date].totalPresent += reportData[inv].dailyAttendance[date] || 0;
+                            chileDailyTotals[date].totalMax += reportData[inv].dailyTotals[date];
+                            
+                            // Guardar conteos para mostrar en modo números
+                            chileDailyCounts[date].present += reportData[inv].dailyAttendance[date] || 0;
+                            chileDailyCounts[date].total += reportData[inv].dailyTotals[date];
+                        }
+                    });
+                }
+            });
+            
+            // Procesar invernaderos de tomate
+            tomateInvernaderos.forEach(inv => {
+                if (reportData[inv]) {
+                    tomateWeekTotal += reportData[inv].weekTotal;
+                    tomateWeekMax += reportData[inv].weekMax;
+                    
+                    currentWeekDates.forEach(date => {
+                        // Acumular para el total diario
+                        if (reportData[inv].dailyTotals[date] > 0) {
+                            tomateDailyTotals[date].totalPresent += reportData[inv].dailyAttendance[date] || 0;
+                            tomateDailyTotals[date].totalMax += reportData[inv].dailyTotals[date];
+                            
+                            // Guardar conteos para mostrar en modo números
+                            tomateDailyCounts[date].present += reportData[inv].dailyAttendance[date] || 0;
+                            tomateDailyCounts[date].total += reportData[inv].dailyTotals[date];
+                        }
+                    });
+                }
+            });
+            
+            // Procesar otras áreas
+            otrasAreas.forEach(area => {
+                if (reportData[area]) {
+                    otrasAreasWeekTotal += reportData[area].weekTotal;
+                    otrasAreasWeekMax += reportData[area].weekMax;
+                    
+                    currentWeekDates.forEach(date => {
+                        // Acumular para el total diario
+                        if (reportData[area].dailyTotals[date] > 0) {
+                            otrasAreasDailyTotals[date].totalPresent += reportData[area].dailyAttendance[date] || 0;
+                            otrasAreasDailyTotals[date].totalMax += reportData[area].dailyTotals[date];
+                            
+                            // Guardar conteos para mostrar en modo números
+                            otrasAreasDailyCounts[date].present += reportData[area].dailyAttendance[date] || 0;
+                            otrasAreasDailyCounts[date].total += reportData[area].dailyTotals[date];
+                        }
+                    });
+                }
+            });
+            
+            // Calcular porcentajes diarios para Chile
+            currentWeekDates.forEach(date => {
+                if (chileDailyTotals[date].totalMax > 0) {
+                    chileDailyPercentages[date] = Math.round((chileDailyTotals[date].totalPresent / chileDailyTotals[date].totalMax) * 100);
+                }
+            });
+            
+            // Calcular porcentajes diarios para Tomate
+            currentWeekDates.forEach(date => {
+                if (tomateDailyTotals[date].totalMax > 0) {
+                    tomateDailyPercentages[date] = Math.round((tomateDailyTotals[date].totalPresent / tomateDailyTotals[date].totalMax) * 100);
+                }
+            });
+            
+            // Calcular porcentajes diarios para Otras Áreas
+            currentWeekDates.forEach(date => {
+                if (otrasAreasDailyTotals[date].totalMax > 0) {
+                    otrasAreasDailyPercentages[date] = Math.round((otrasAreasDailyTotals[date].totalPresent / otrasAreasDailyTotals[date].totalMax) * 100);
+                }
+            });
+            
+            // Calcular porcentajes semanales
+            const chilePercentage = chileWeekMax > 0 ? Math.round((chileWeekTotal / chileWeekMax) * 100) : 0;
+            const tomatePercentage = tomateWeekMax > 0 ? Math.round((tomateWeekTotal / tomateWeekMax) * 100) : 0;
+            const otrasAreasPercentage = otrasAreasWeekMax > 0 ? Math.round((otrasAreasWeekTotal / otrasAreasWeekMax) * 100) : 0;
+            
+            // Actualizar resúmenes
+            if (viewMode === 'percentage') {
+                document.getElementById('chile-promedio').textContent = `${chilePercentage}%`;
+                document.getElementById('tomate-promedio').textContent = `${tomatePercentage}%`;
+                document.getElementById('otras-areas-promedio').textContent = `${otrasAreasPercentage}%`;
+                
+                // Aplicar colores según porcentaje
+                applyPercentageColor('chile-promedio', chilePercentage);
+                applyPercentageColor('tomate-promedio', tomatePercentage);
+                applyPercentageColor('otras-areas-promedio', otrasAreasPercentage);
+            } else {
+                // En modo números, calcular promedio dividiendo entre número de invernaderos
+                const chileAvg = chileInvernaderos.length > 0 ? Math.round(chileWeekTotal / chileInvernaderos.length) : 0;
+                const tomateAvg = tomateInvernaderos.length > 0 ? Math.round(tomateWeekTotal / tomateInvernaderos.length) : 0;
+                const otrasAreasAvg = otrasAreas.length > 0 ? Math.round(otrasAreasWeekTotal / otrasAreas.length) : 0;
+                
+                document.getElementById('chile-promedio').textContent = `${chileAvg}`;
+                document.getElementById('tomate-promedio').textContent = `${tomateAvg}`;
+                document.getElementById('otras-areas-promedio').textContent = `${otrasAreasAvg}`;
+                
+                // Quitar colores
+                document.getElementById('chile-promedio').className = '';
+                document.getElementById('tomate-promedio').className = '';
+                document.getElementById('otras-areas-promedio').className = '';
+            }
+            
+            // Generar tablas de resumen diario
+            generateDailySummary('chile-resumen', chileDailyPercentages, chileDailyCounts);
+            generateDailySummary('tomate-resumen', tomateDailyPercentages, tomateDailyCounts);
+            generateDailySummary('otras-areas-resumen', otrasAreasDailyPercentages, otrasAreasDailyCounts);
+        }
+
+        // Generar resumen diario
+        function generateDailySummary(elementId, dailyPercentages, dailyCounts) {
+            const tbody = document.getElementById(elementId);
+            tbody.innerHTML = '';
+            
+            currentWeekDates.forEach((date, index) => {
+                const dayName = diasSemana[index];
+                const percentage = dailyPercentages[date] || 0;
+                const count = dailyCounts[date] || { present: 0, total: 0 };
+                
+                const percentageClass = percentage > 0 ? getPercentageClass(percentage) : 'no-attendance';
+                
+                const row = document.createElement('tr');
+                
+                if (count.total === 0) {
+                    // Día sin datos de asistencia
+                    row.innerHTML = `
+                        <td>${dayName}</td>
+                        <td class="no-attendance">-</td>
+                    `;
+                } else {
+                    if (viewMode === 'percentage') {
+                        row.innerHTML = `
+                            <td>${dayName}</td>
+                            <td class="${percentageClass}">${percentage}%</td>
+                        `;
+                    } else {
+                        row.innerHTML = `
+                            <td>${dayName}</td>
+                            <td>${count.present}</td>
+                        `;
+                    }
+                }
+                
+                tbody.appendChild(row);
+            });
+            
+            if (tbody.children.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" class="text-center no-data">No hay datos disponibles</td></tr>';
+            }
+        }
+
+        // Aplicar color según porcentaje
+        function applyPercentageColor(elementId, percentage) {
+            const element = document.getElementById(elementId);
+            element.className = '';
+            if (percentage >= 80) element.classList.add('high-percentage');
+            else if (percentage >= 70) element.classList.add('medium-percentage');
+            else element.classList.add('low-percentage');
+        }
+
+        // Generar tabla de chile
+        function generateChileTable(reportData) {
+            const tableBody = document.getElementById('chile-table-body');
+            tableBody.innerHTML = '';
+            
+            const chileData = chileInvernaderos.map(inv => {
+                return {
+                    inv: inv,
+                    data: reportData[inv] || {
+                        dailyAttendance: {},
+                        dailyTotals: {},
+                        weekTotal: 0,
+                        weekMax: 0,
+                        daysWithData: 0
+                    }
+                };
+            });
+            
+            if (chileData.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" class="text-center">No hay datos disponibles para chile</td></tr>';
+                return;
+            }
+            
+            // Variables para calcular el total diario
+            const dailyTotals = {};
+            currentWeekDates.forEach(date => {
+                dailyTotals[date] = {
+                    totalPresent: 0,
+                    totalMax: 0
+                };
+            });
+            
+            // Generar filas para cada invernadero
+            chileData.forEach(({inv, data}) => {
+                const row = document.createElement('tr');
+                
+                // Celda del invernadero (abreviada)
+                let rowContent = `<td class="inv-header"><strong>${inv}</strong></td>`;
+                
+                // Celdas de días (TODOS los días de la semana)
+                let weekTotalPresent = 0;
+                let weekTotalMax = 0;
+                
+                currentWeekDates.forEach(date => {
+                    const presentCount = data.dailyAttendance[date] || 0;
+                    const totalEmployees = data.dailyTotals[date] || 0;
+                    
+                    if (totalEmployees > 0) {
+                        const percentage = Math.round((presentCount / totalEmployees) * 100);
+                        const percentageClass = getPercentageClass(percentage);
+                        
+                        if (viewMode === 'percentage') {
+                            rowContent += `<td class="percentage-cell ${percentageClass}" data-present="${presentCount}" data-total="${totalEmployees}">${percentage}%</td>`;
+                        } else {
+                            rowContent += `<td class="count-cell" data-present="${presentCount}" data-total="${totalEmployees}">${presentCount}</td>`;
+                        }
+                        
+                        // Acumular para el total diario
+                        dailyTotals[date].totalPresent += presentCount;
+                        dailyTotals[date].totalMax += totalEmployees;
+                        
+                        // Acumular para el total semanal
+                        weekTotalPresent += presentCount;
+                        weekTotalMax += totalEmployees;
+                    } else {
+                        // Día sin datos
+                        rowContent += `<td class="${viewMode === 'percentage' ? 'percentage-cell' : 'count-cell'} no-attendance">-</td>`;
+                    }
+                });
+                
+                row.innerHTML = rowContent;
+                tableBody.appendChild(row);
+            });
+            
+            // Agregar fila de PROMEDIO TOTAL COMBINADO al final
+            const totalRow = document.createElement('tr');
+            totalRow.className = 'total-row';
+            
+            let totalRowContent = `<td class="inv-header"><strong>PROMEDIO TOTAL</strong></td>`;
+            let weekTotalPresent = 0;
+            let weekTotalMax = 0;
+            
+            currentWeekDates.forEach(date => {
+                const totalPresent = dailyTotals[date].totalPresent;
+                const totalMax = dailyTotals[date].totalMax;
+                
+                if (totalMax > 0) {
+                    if (viewMode === 'percentage') {
+                        const percentage = Math.round((totalPresent / totalMax) * 100);
+                        const percentageClass = getPercentageClass(percentage);
+                        totalRowContent += `<td class="percentage-cell ${percentageClass}" data-present="${totalPresent}" data-total="${totalMax}">${percentage}%</td>`;
+                    } else {
+                        // En modo números, calcular promedio dividiendo entre número de invernaderos
+                        const avgPresent = chileInvernaderos.length > 0 ? Math.round(totalPresent / chileInvernaderos.length) : 0;
+                        totalRowContent += `<td class="count-cell" data-present="${totalPresent}" data-total="${totalMax}">${avgPresent}</td>`;
+                    }
+                    
+                    // Acumular para el total semanal
+                    weekTotalPresent += totalPresent;
+                    weekTotalMax += totalMax;
+                } else {
+                    totalRowContent += `<td class="${viewMode === 'percentage' ? 'percentage-cell' : 'count-cell'} no-attendance">-</td>`;
+                }
+            });
+            
+            // Celda de PROMEDIO TOTAL COMBINADO para todos los invernaderos
+            if (viewMode === 'percentage') {
+                const weekPercentage = weekTotalMax > 0 ? Math.round((weekTotalPresent / weekTotalMax) * 100) : 0;
+                const weekPercentageClass = getPercentageClass(weekPercentage);
+                totalRowContent += `<td class="percentage-cell combined-average ${weekPercentageClass}" data-present="${weekTotalPresent}" data-total="${weekTotalMax}" colspan="1">${weekPercentage}%</td>`;
+            } else {
+                // En modo números, calcular promedio dividiendo entre número de invernaderos
+                const weekAvg = chileInvernaderos.length > 0 ? Math.round(weekTotalPresent / chileInvernaderos.length) : 0;
+                totalRowContent += `<td class="count-cell combined-average" data-present="${weekTotalPresent}" data-total="${weekTotalMax}" colspan="1">${weekAvg}</td>`;
+            }
+            
+            totalRow.innerHTML = totalRowContent;
+            tableBody.appendChild(totalRow);
+        }
+
+        // Generar tabla de tomate
+        function generateTomateTable(reportData) {
+            const tableBody = document.getElementById('tomate-table-body');
+            tableBody.innerHTML = '';
+            
+            const tomateData = tomateInvernaderos.map(inv => {
+                return {
+                    inv: inv,
+                    data: reportData[inv] || {
+                        dailyAttendance: {},
+                        dailyTotals: {},
+                        weekTotal: 0,
+                        weekMax: 0,
+                        daysWithData: 0
+                    }
+                };
+            });
+            
+            if (tomateData.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" class="text-center">No hay datos disponibles para tomate</td></tr>';
+                return;
+            }
+            
+            // Variables para calcular el total diario
+            const dailyTotals = {};
+            currentWeekDates.forEach(date => {
+                dailyTotals[date] = {
+                    totalPresent: 0,
+                    totalMax: 0
+                };
+            });
+            
+            // Generar filas para cada invernadero
+            tomateData.forEach(({inv, data}) => {
+                const row = document.createElement('tr');
+                
+                // Celda del invernadero (abreviada)
+                let rowContent = `<td class="inv-header"><strong>${inv}</strong></td>`;
+                
+                // Celdas de días (TODOS los días de la semana)
+                let weekTotalPresent = 0;
+                let weekTotalMax = 0;
+                
+                currentWeekDates.forEach(date => {
+                    const presentCount = data.dailyAttendance[date] || 0;
+                    const totalEmployees = data.dailyTotals[date] || 0;
+                    
+                    if (totalEmployees > 0) {
+                        const percentage = Math.round((presentCount / totalEmployees) * 100);
+                        const percentageClass = getPercentageClass(percentage);
+                        
+                        if (viewMode === 'percentage') {
+                            rowContent += `<td class="percentage-cell ${percentageClass}" data-present="${presentCount}" data-total="${totalEmployees}">${percentage}%</td>`;
+                        } else {
+                            rowContent += `<td class="count-cell" data-present="${presentCount}" data-total="${totalEmployees}">${presentCount}</td>`;
+                        }
+                        
+                        // Acumular para el total diario
+                        dailyTotals[date].totalPresent += presentCount;
+                        dailyTotals[date].totalMax += totalEmployees;
+                        
+                        // Acumular para el total semanal
+                        weekTotalPresent += presentCount;
+                        weekTotalMax += totalEmployees;
+                    } else {
+                        // Día sin datos
+                        rowContent += `<td class="${viewMode === 'percentage' ? 'percentage-cell' : 'count-cell'} no-attendance">-</td>`;
+                    }
+                });
+                
+                row.innerHTML = rowContent;
+                tableBody.appendChild(row);
+            });
+            
+            // Agregar fila de PROMEDIO TOTAL COMBINADO al final
+            const totalRow = document.createElement('tr');
+            totalRow.className = 'total-row';
+            
+            let totalRowContent = `<td class="inv-header"><strong>PROMEDIO TOTAL</strong></td>`;
+            let weekTotalPresent = 0;
+            let weekTotalMax = 0;
+            
+            currentWeekDates.forEach(date => {
+                const totalPresent = dailyTotals[date].totalPresent;
+                const totalMax = dailyTotals[date].totalMax;
+                
+                if (totalMax > 0) {
+                    if (viewMode === 'percentage') {
+                        const percentage = Math.round((totalPresent / totalMax) * 100);
+                        const percentageClass = getPercentageClass(percentage);
+                        totalRowContent += `<td class="percentage-cell ${percentageClass}" data-present="${totalPresent}" data-total="${totalMax}">${percentage}%</td>`;
+                    } else {
+                        // En modo números, calcular promedio dividiendo entre número de invernaderos
+                        const avgPresent = tomateInvernaderos.length > 0 ? Math.round(totalPresent / tomateInvernaderos.length) : 0;
+                        totalRowContent += `<td class="count-cell" data-present="${totalPresent}" data-total="${totalMax}">${avgPresent}</td>`;
+                    }
+                    
+                    // Acumular para el total semanal
+                    weekTotalPresent += totalPresent;
+                    weekTotalMax += totalMax;
+                } else {
+                    totalRowContent += `<td class="${viewMode === 'percentage' ? 'percentage-cell' : 'count-cell'} no-attendance">-</td>`;
+                }
+            });
+            
+            // Celda de PROMEDIO TOTAL COMBINADO para todos los invernaderos
+            if (viewMode === 'percentage') {
+                const weekPercentage = weekTotalMax > 0 ? Math.round((weekTotalPresent / weekTotalMax) * 100) : 0;
+                const weekPercentageClass = getPercentageClass(weekPercentage);
+                totalRowContent += `<td class="percentage-cell combined-average ${weekPercentageClass}" data-present="${weekTotalPresent}" data-total="${weekTotalMax}" colspan="1">${weekPercentage}%</td>`;
+            } else {
+                // En modo números, calcular promedio dividiendo entre número de invernaderos
+                const weekAvg = tomateInvernaderos.length > 0 ? Math.round(weekTotalPresent / tomateInvernaderos.length) : 0;
+                totalRowContent += `<td class="count-cell combined-average" data-present="${weekTotalPresent}" data-total="${weekTotalMax}" colspan="1">${weekAvg}</td>`;
+            }
+            
+            totalRow.innerHTML = totalRowContent;
+            tableBody.appendChild(totalRow);
+        }
+
+        // Generar tabla de Otras Áreas
+        function generateOtrasAreasTable(reportData) {
+            const tableBody = document.getElementById('otras-areas-table-body');
+            tableBody.innerHTML = '';
+            
+            const otrasAreasData = otrasAreas.map(area => {
+                return {
+                    area: areaAbbreviationMapping[area] || area, // Usar abreviación si existe
+                    data: reportData[area] || {
+                        dailyAttendance: {},
+                        dailyTotals: {},
+                        weekTotal: 0,
+                        weekMax: 0,
+                        daysWithData: 0
+                    }
+                };
+            });
+            
+            if (otrasAreasData.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" class="text-center">No hay datos disponibles para otras áreas</td></tr>';
+                return;
+            }
+            
+            // Variables para calcular el total diario
+            const dailyTotals = {};
+            currentWeekDates.forEach(date => {
+                dailyTotals[date] = {
+                    totalPresent: 0,
+                    totalMax: 0
+                };
+            });
+            
+            // Generar filas para cada área
+            otrasAreasData.forEach(({area, data}) => {
+                const row = document.createElement('tr');
+                
+                // Celda del área (abreviada)
+                let rowContent = `<td class="inv-header"><strong>${area}</strong></td>`;
+                
+                // Celdas de días (TODOS los días de la semana)
+                let weekTotalPresent = 0;
+                let weekTotalMax = 0;
+                
+                currentWeekDates.forEach(date => {
+                    const presentCount = data.dailyAttendance[date] || 0;
+                    const totalEmployees = data.dailyTotals[date] || 0;
+                    
+                    if (totalEmployees > 0) {
+                        const percentage = Math.round((presentCount / totalEmployees) * 100);
+                        const percentageClass = getPercentageClass(percentage);
+                        
+                        if (viewMode === 'percentage') {
+                            rowContent += `<td class="percentage-cell ${percentageClass}" data-present="${presentCount}" data-total="${totalEmployees}">${percentage}%</td>`;
+                        } else {
+                            rowContent += `<td class="count-cell" data-present="${presentCount}" data-total="${totalEmployees}">${presentCount}</td>`;
+                        }
+                        
+                        // Acumular para el total diario
+                        dailyTotals[date].totalPresent += presentCount;
+                        dailyTotals[date].totalMax += totalEmployees;
+                        
+                        // Acumular para el total semanal
+                        weekTotalPresent += presentCount;
+                        weekTotalMax += totalEmployees;
+                    } else {
+                        // Día sin datos
+                        rowContent += `<td class="${viewMode === 'percentage' ? 'percentage-cell' : 'count-cell'} no-attendance">-</td>`;
+                    }
+                });
+                
+                row.innerHTML = rowContent;
+                tableBody.appendChild(row);
+            });
+            
+            // Agregar fila de PROMEDIO TOTAL COMBINADO al final
+            const totalRow = document.createElement('tr');
+            totalRow.className = 'total-row';
+            
+            let totalRowContent = `<td class="inv-header"><strong>PROMEDIO TOTAL</strong></td>`;
+            let weekTotalPresent = 0;
+            let weekTotalMax = 0;
+            
+            currentWeekDates.forEach(date => {
+                const totalPresent = dailyTotals[date].totalPresent;
+                const totalMax = dailyTotals[date].totalMax;
+                
+                if (totalMax > 0) {
+                    if (viewMode === 'percentage') {
+                        const percentage = Math.round((totalPresent / totalMax) * 100);
+                        const percentageClass = getPercentageClass(percentage);
+                        totalRowContent += `<td class="percentage-cell ${percentageClass}" data-present="${totalPresent}" data-total="${totalMax}">${percentage}%</td>`;
+                    } else {
+                        // En modo números, calcular promedio dividiendo entre número de áreas
+                        const avgPresent = otrasAreas.length > 0 ? Math.round(totalPresent / otrasAreas.length) : 0;
+                        totalRowContent += `<td class="count-cell" data-present="${totalPresent}" data-total="${totalMax}">${avgPresent}</td>`;
+                    }
+                    
+                    // Acumular para el total semanal
+                    weekTotalPresent += totalPresent;
+                    weekTotalMax += totalMax;
+                } else {
+                    totalRowContent += `<td class="${viewMode === 'percentage' ? 'percentage-cell' : 'count-cell'} no-attendance">-</td>`;
+                }
+            });
+            
+            // Celda de PROMEDIO TOTAL COMBINADO para todas las áreas
+            if (viewMode === 'percentage') {
+                const weekPercentage = weekTotalMax > 0 ? Math.round((weekTotalPresent / weekTotalMax) * 100) : 0;
+                const weekPercentageClass = getPercentageClass(weekPercentage);
+                totalRowContent += `<td class="percentage-cell combined-average ${weekPercentageClass}" data-present="${weekTotalPresent}" data-total="${weekTotalMax}" colspan="1">${weekPercentage}%</td>`;
+            } else {
+                // En modo números, calcular promedio dividiendo entre número de áreas
+                const weekAvg = otrasAreas.length > 0 ? Math.round(weekTotalPresent / otrasAreas.length) : 0;
+                totalRowContent += `<td class="count-cell combined-average" data-present="${weekTotalPresent}" data-total="${weekTotalMax}" colspan="1">${weekAvg}</td>`;
+            }
+            
+            totalRow.innerHTML = totalRowContent;
+            tableBody.appendChild(totalRow);
+        }
+
+        // Obtener clase CSS según el porcentaje
+        function getPercentageClass(percentage) {
+            if (percentage >= 80) return 'high-percentage';
+            if (percentage >= 70) return 'medium-percentage';
+            return 'low-percentage';
+        }
+
+        // Agregar event listeners para mostrar detalles al hacer clic
+        function addCellClickListeners() {
+            // Agregar event listeners a todas las celdas con datos
+            const cells = document.querySelectorAll('.percentage-cell, .count-cell');
+            cells.forEach(cell => {
+                if (!cell.classList.contains('no-attendance')) {
+                    cell.addEventListener('click', function() {
+                        const present = this.getAttribute('data-present');
+                        const total = this.getAttribute('data-total');
+                        
+                        if (present && total) {
+                            // Crear tooltip si no existe
+                            let tooltip = document.querySelector('.count-tooltip');
+                            if (!tooltip) {
+                                tooltip = document.createElement('div');
+                                tooltip.className = 'count-tooltip';
+                                document.body.appendChild(tooltip);
+                            }
+                            
+                            // Posicionar y mostrar tooltip
+                            const rect = this.getBoundingClientRect();
+                            tooltip.textContent = `${present}/${total}`;
+                            tooltip.style.left = `${rect.left + window.scrollX}px`;
+                            tooltip.style.top = `${rect.top + window.scrollY - 30}px`;
+                            tooltip.style.display = 'block';
+                            
+                            // Ocultar tooltip después de 2 segundos
+                            setTimeout(() => {
+                                tooltip.style.display = 'none';
+                            }, 2000);
+                        }
+                    });
+                }
+            });
+        }
+
+        // Mostrar mensaje de error
+        function showError(message) {
+            document.getElementById('chile-table-body').innerHTML = 
+                `<tr><td colspan="8" class="text-center text-danger">${message}</td></tr>`;
+            
+            document.getElementById('tomate-table-body').innerHTML = 
+                `<tr><td colspan="8" class="text-center text-danger">${message}</td></tr>`;
+            
+            document.getElementById('otras-areas-table-body').innerHTML = 
+                `<tr><td colspan="8" class="text-center text-danger">${message}</td></tr>`;
+        }
+    </script>
+</body>
+</html>

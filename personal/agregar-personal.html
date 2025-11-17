@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Personal - Agro Productos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+            --admin-color: #2196F3;
+            --grower-junior-color: #FF9800;
+            --digitador-color: #9C27B0;
+            --tecnico-color: #607D8B;
+            --supervisor-color: #FF5722;
+            --invitado-color: #9E9E9E;
+            --gerente-general-color: #E91E63;
+            --gerente-produccion-color: #3F51B5;
+            --jefe-vivero-color: #009688;
+            --error-color: #f44336;
+            --light-gray: #f5f5f5;
+            --white: #ffffff;
+            --dark-gray: #000000;
+            --sidebar-bg: #2c3e50;
+            --sidebar-hover: #34495e;
+            --sidebar-active: #3498db;
+            
+            /* Colores para niveles de severidad */
+            --bajo-color: #4CAF50;
+            --medio-color: #FF9800;
+            --alto-color: #f44336;
+            
+            /* Colores para estados */
+            --activo-color: #4CAF50;
+            --liberado-color: #9E9E9E;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-space {
+            height: 70px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            min-height: calc(100vh - 140px);
+        }
+
+        .container {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .card {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: none;
+        }
+        
+        .card-header {
+            border-radius: 8px 8px 0 0 !important;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--dark-gray);
+            font-size: 14px;
+        }
+
+        select, input, textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
+        }
+
+        .module-badge {
+            background-color: #e8f5e9;
+            color: var(--secondary-color);
+            border: 1px solid #c8e6c9;
+            border-radius: 20px;
+            padding: 8px 15px;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .module-badge:hover {
+            background-color: #c8e6c9;
+            transform: translateY(-2px);
+        }
+        
+        .module-badge.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .invernadero-item {
+            background-color: #f1f8e9;
+            border: 1px solid #dcedc8;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .invernadero-item:hover {
+            background-color: #dcedc8;
+            transform: translateY(-2px);
+        }
+        
+        .invernadero-item.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--invitado-color);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+
+        .required-field::after {
+            content: '*';
+            color: #dc3545;
+            margin-left: 4px;
+        }
+
+        .employee-preview {
+            background-color: #e8f5e9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .area-special {
+            background-color: #e3f2fd;
+            border: 1px solid #bbdefb;
+        }
+        
+        .area-special.selected {
+            background-color: var(--admin-color);
+            color: white;
+            border-color: #1976d2;
+        }
+        
+        .is-invalid {
+            border-color: var(--error-color) !important;
+        }
+        
+        .invalid-feedback {
+            display: block;
+            color: var(--error-color);
+            margin-top: 5px;
+        }
+        
+        .form-label {
+            font-weight: 500;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(76, 175, 80, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer-space {
+            height: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .module-badge, .invernadero-item {
+                width: calc(50% - 10px);
+                text-align: center;
+                margin: 5px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .d-flex.justify-content-between {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .module-badge, .invernadero-item {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Espacio reservado para el header -->
+    <div class="header-space"></div>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="#">Inicio</a> > <a href="#">Personal</a> > Registro de Empleados
+            </div>
+            
+            <h1>Registro de Personal</h1>
+            
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>Agregar Nuevo Empleado</h4>
+                </div>
+                <div class="card-body">
+                    <form id="employee-form">
+                        <!-- Información Básica -->
+                        <h4 class="section-title"><i class="fas fa-user me-2"></i>Información Básica</h4>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="nombre" class="form-label required-field">Nombre completo</label>
+                                <input type="text" class="form-control" id="nombre" required>
+                                <div class="invalid-feedback">Por favor ingrese el nombre</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="codigo" class="form-label required-field">Código de empleado</label>
+                                <input type="text" class="form-control" id="codigo" required>
+                                <div class="invalid-feedback">Por favor ingrese el código</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="puesto" class="form-label required-field">Puesto</label>
+                                <select class="form-select" id="puesto" required>
+                                    <option value="">Seleccione un puesto...</option>
+                                    <option value="caporal">Caporal</option>
+                                    <option value="asignado">Asignado</option>
+                                    <option value="mulero">Mulero</option>
+                                    <option value="picudero">Picudero</option>
+                                    <option value="fumigador">Fumigador</option>
+                                    <option value="aseador">Aseador(a)</option>
+                                    <option value="operario-riego">Operario de riego</option>
+                                    <option value="digitador">Digitador</option>
+                                    <option value="mezclero">Mezclero</option>
+                                </select>
+                                <div class="invalid-feedback">Por favor seleccione un puesto</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="fecha-ingreso" class="form-label">Fecha de ingreso</label>
+                                <input type="date" class="form-control" id="fecha-ingreso">
+                            </div>
+                        </div>
+
+                        <!-- Selección de Módulo -->
+                        <h4 class="section-title"><i class="fas fa-tractor me-2"></i>Selección de Módulo</h4>
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <p class="mb-3">Seleccione el módulo asignado:</p>
+                                <div class="d-flex flex-wrap" id="modulo-container">
+                                    <div class="module-badge" data-module="C">Módulo C</div>
+                                    <div class="module-badge" data-module="D">Módulo D</div>
+                                    <div class="module-badge" data-module="I">Módulo I</div>
+                                    <div class="module-badge" data-module="J">Módulo J</div>
+                                    <div class="module-badge" data-module="otras-areas">Otras Áreas</div>
+                                </div>
+                                <input type="hidden" id="modulo-seleccionado" required>
+                                <div class="invalid-feedback" id="modulo-error">Por favor seleccione un módulo</div>
+                            </div>
+                        </div>
+
+                        <!-- Selección de Invernaderos (dependiendo del módulo) -->
+                        <h4 class="section-title"><i class="fas fa-leaf me-2"></i>Selección de Invernaderos y Áreas</h4>
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <p class="mb-3" id="invernadero-text">Seleccione los invernaderos o áreas:</p>
+                                <div id="contenedor-invernaderos" class="d-flex flex-wrap">
+                                    <div class="alert alert-info">
+                                        Primero seleccione un módulo para ver las opciones disponibles
+                                    </div>
+                                </div>
+                                <input type="hidden" id="invernaderos-seleccionados">
+                                <div class="invalid-feedback" id="invernadero-error">Por favor seleccione al menos un invernadero o área</div>
+                            </div>
+                        </div>
+
+                        <!-- Información Adicional -->
+                        <h4 class="section-title"><i class="fas fa-info-circle me-2"></i>Información Adicional</h4>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="observaciones" class="form-label">Observaciones</label>
+                                <textarea class="form-control" id="observaciones" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-secondary" id="btn-cancelar">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Guardar Empleado
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Vista previa del empleado -->
+                    <div class="employee-preview mt-5" id="vista-previa">
+                        <h5 class="text-center mb-3">Vista Previa del Empleado</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Nombre:</strong> <span id="preview-nombre">-</span></p>
+                                <p><strong>Código:</strong> <span id="preview-codigo">-</span></p>
+                                <p><strong>Puesto:</strong> <span id="preview-puesto">-</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Módulo:</strong> <span id="preview-modulo">-</span></p>
+                                <p><strong>Invernaderos/Áreas:</strong> <span id="preview-invernaderos">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Espacio reservado para el footer -->
+    <div class="footer-space"></div>
+
+    <!-- Toast para notificaciones -->
+    <div class="toast-container">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="fas fa-check-circle me-2 text-success"></i>
+                <strong class="me-auto">Sistema de Personal</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toast-message">
+                Empleado guardado correctamente
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Database -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // Configuración de Firebase con tu URL
+        const firebaseConfig = {
+            databaseURL: "https://agro-productos-default-rtdb.firebaseio.com"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Referencia a la tabla de personal
+        const personalRef = database.ref('personal');
+
+        // Datos de invernaderos por módulo (todos incluyen Fitosanidad y Riego)
+        const invernaderosPorModulo = {
+            'C': ['9', '10', '11', '12', 'Fitosanidad', 'Riego'],
+            'D': ['13', '14', '15', '16', 'Fitosanidad', 'Riego'],
+            'I': ['33', '35', 'Fitosanidad', 'Riego'],
+            'J': ['37', '39', 'Fitosanidad', 'Riego'],
+            'otras-areas': ['Mantenimiento', 'Fitosanidad', 'Riego', 'Vivero']
+        };
+
+        // Variables para almacenar selecciones
+        let moduloSeleccionado = '';
+        let invernaderosSeleccionados = [];
+
+        // Inicializar toast de notificación
+        const toastLiveExample = document.getElementById('liveToast');
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar módulos
+            const modulos = document.querySelectorAll('.module-badge');
+            modulos.forEach(modulo => {
+                modulo.addEventListener('click', function() {
+                    // Deseleccionar todos los módulos
+                    modulos.forEach(m => m.classList.remove('selected'));
+                    
+                    // Seleccionar el módulo clickeado
+                    this.classList.add('selected');
+                    moduloSeleccionado = this.dataset.module;
+                    document.getElementById('modulo-seleccionado').value = moduloSeleccionado;
+                    
+                    // Ocultar mensaje de error si existe
+                    document.getElementById('modulo-error').style.display = 'none';
+                    
+                    // Actualizar vista previa
+                    actualizarVistaPrevia();
+                    
+                    // Cargar invernaderos para el módulo seleccionado
+                    cargarInvernaderos(moduloSeleccionado);
+                });
+            });
+
+            // Configurar formulario
+            document.getElementById('employee-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (validarFormulario()) {
+                    guardarEmpleado();
+                }
+            });
+
+            // Configurar cancelar
+            document.getElementById('btn-cancelar').addEventListener('click', function() {
+                if (confirm('¿Está seguro de que desea cancelar? Se perderán todos los datos ingresados.')) {
+                    resetFormulario();
+                }
+            });
+
+            // Actualizar vista previa en tiempo real
+            document.getElementById('nombre').addEventListener('input', actualizarVistaPrevia);
+            document.getElementById('codigo').addEventListener('input', actualizarVistaPrevia);
+            document.getElementById('puesto').addEventListener('change', actualizarVistaPrevia);
+        });
+
+        // Cargar invernaderos según el módulo seleccionado
+        function cargarInvernaderos(modulo) {
+            const contenedor = document.getElementById('contenedor-invernaderos');
+            const invernaderos = invernaderosPorModulo[modulo] || [];
+            
+            contenedor.innerHTML = '';
+            invernaderosSeleccionados = [];
+            
+            if (invernaderos.length === 0) {
+                contenedor.innerHTML = '<div class="alert alert-warning">No hay opciones disponibles para este módulo</div>';
+                return;
+            }
+            
+            // Actualizar texto según el módulo seleccionado
+            if (modulo === 'otras-areas') {
+                document.getElementById('invernadero-text').textContent = 'Seleccione las áreas:';
+            } else {
+                document.getElementById('invernadero-text').textContent = 'Seleccione los invernaderos o áreas:';
+            }
+            
+            invernaderos.forEach(invernadero => {
+                const item = document.createElement('div');
+                
+                // Aplicar clase especial para áreas especiales
+                if (invernadero === 'Fitosanidad' || invernadero === 'Riego' || invernadero === 'Mantenimiento' || invernadero === 'Vivero') {
+                    item.className = 'invernadero-item area-special';
+                } else {
+                    item.className = 'invernadero-item';
+                }
+                
+                // Mostrar nombre apropiado
+                if (invernadero === 'Fitosanidad' || invernadero === 'Riego' || invernadero === 'Mantenimiento' || invernadero === 'Vivero') {
+                    item.textContent = invernadero;
+                } else {
+                    item.textContent = 'Invernadero ' + invernadero;
+                }
+                
+                item.dataset.invernadero = invernadero;
+                
+                item.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                    
+                    const invernaderoId = this.dataset.invernadero;
+                    if (this.classList.contains('selected')) {
+                        // Agregar a la selección
+                        if (!invernaderosSeleccionados.includes(invernaderoId)) {
+                            invernaderosSeleccionados.push(invernaderoId);
+                        }
+                    } else {
+                        // Quitar de la selección
+                        invernaderosSeleccionados = invernaderosSeleccionados.filter(i => i !== invernaderoId);
+                    }
+                    
+                    document.getElementById('invernaderos-seleccionados').value = invernaderosSeleccionados.join(',');
+                    
+                    // Ocultar mensaje de error si existe
+                    document.getElementById('invernadero-error').style.display = 'none';
+                    
+                    actualizarVistaPrevia();
+                });
+                
+                contenedor.appendChild(item);
+            });
+        }
+
+        // Validar formulario
+        function validarFormulario() {
+            let valido = true;
+            const nombre = document.getElementById('nombre');
+            const codigo = document.getElementById('codigo');
+            const puesto = document.getElementById('puesto');
+            
+            // Validar nombre
+            if (!nombre.value.trim()) {
+                nombre.classList.add('is-invalid');
+                valido = false;
+            } else {
+                nombre.classList.remove('is-invalid');
+            }
+            
+            // Validar código
+            if (!codigo.value.trim()) {
+                codigo.classList.add('is-invalid');
+                valido = false;
+            } else {
+                codigo.classList.remove('is-invalid');
+            }
+            
+            // Validar puesto
+            if (!puesto.value) {
+                puesto.classList.add('is-invalid');
+                valido = false;
+            } else {
+                puesto.classList.remove('is-invalid');
+            }
+            
+            // Validar módulo
+            if (!moduloSeleccionado) {
+                document.getElementById('modulo-error').style.display = 'block';
+                valido = false;
+            } else {
+                document.getElementById('modulo-error').style.display = 'none';
+            }
+            
+            // Validar invernaderos
+            if (invernaderosSeleccionados.length === 0) {
+                document.getElementById('invernadero-error').style.display = 'block';
+                valido = false;
+            } else {
+                document.getElementById('invernadero-error').style.display = 'none';
+            }
+            
+            return valido;
+        }
+
+        // Actualizar vista previa
+        function actualizarVistaPrevia() {
+            document.getElementById('preview-nombre').textContent = document.getElementById('nombre').value || '-';
+            document.getElementById('preview-codigo').textContent = document.getElementById('codigo').value || '-';
+            
+            const puestoSelect = document.getElementById('puesto');
+            const puestoTexto = puestoSelect.options[puestoSelect.selectedIndex]?.text || '-';
+            document.getElementById('preview-puesto').textContent = puestoTexto;
+            
+            document.getElementById('preview-modulo').textContent = moduloSeleccionado || '-';
+            
+            if (invernaderosSeleccionados.length > 0) {
+                // Mostrar nombres apropiados según el tipo
+                const nombresMostrar = invernaderosSeleccionados.map(i => {
+                    if (i === 'Fitosanidad' || i === 'Riego' || i === 'Mantenimiento' || i === 'Vivero') {
+                        return i;
+                    } else {
+                        return 'Invernadero ' + i;
+                    }
+                }).join(', ');
+                
+                document.getElementById('preview-invernaderos').textContent = nombresMostrar;
+            } else {
+                document.getElementById('preview-invernaderos').textContent = '-';
+            }
+        }
+
+        // Guardar empleado en Firebase
+        function guardarEmpleado() {
+            const empleado = {
+                nombre: document.getElementById('nombre').value.trim(),
+                codigo: document.getElementById('codigo').value.trim(),
+                puesto: document.getElementById('puesto').value,
+                modulo: moduloSeleccionado,
+                invernaderos: invernaderosSeleccionados,
+                telefono: document.getElementById('telefono').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                fechaIngreso: document.getElementById('fecha-ingreso').value,
+                observaciones: document.getElementById('observaciones').value.trim(),
+                fechaRegistro: new Date().toISOString()
+            };
+
+            // Guardar en Firebase
+            personalRef.push(empleado)
+                .then(() => {
+                    // Mostrar mensaje de éxito
+                    document.getElementById('toast-message').textContent = 'Empleado guardado correctamente en Firebase';
+                    document.querySelector('.toast-header i').className = 'fas fa-check-circle me-2 text-success';
+                    toastBootstrap.show();
+                    
+                    // Resetear formulario
+                    resetFormulario();
+                })
+                .catch((error) => {
+                    console.error('Error al guardar el empleado:', error);
+                    document.getElementById('toast-message').textContent = 'Error al guardar el empleado. Por favor, intente nuevamente.';
+                    document.querySelector('.toast-header i').className = 'fas fa-exclamation-circle me-2 text-danger';
+                    toastBootstrap.show();
+                });
+        }
+
+        // Resetear formulario
+        function resetFormulario() {
+            document.getElementById('employee-form').reset();
+            moduloSeleccionado = '';
+            invernaderosSeleccionados = [];
+            document.querySelectorAll('.module-badge').forEach(m => m.classList.remove('selected'));
+            document.querySelectorAll('.invernadero-item').forEach(i => i.classList.remove('selected'));
+            document.getElementById('contenedor-invernaderos').innerHTML = '<div class="alert alert-info">Primero seleccione un módulo para ver las opciones disponibles</div>';
+            document.getElementById('invernadero-text').textContent = 'Seleccione los invernaderos o áreas:';
+            document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            actualizarVistaPrevia();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Asistencias - Agro Productos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+            --admin-color: #2196F3;
+            --grower-junior-color: #FF9800;
+            --digitador-color: #9C27B0;
+            --tecnico-color: #607D8B;
+            --supervisor-color: #FF5722;
+            --invitado-color: #9E9E9E;
+            --gerente-general-color: #E91E63;
+            --gerente-produccion-color: #3F51B5;
+            --jefe-vivero-color: #009688;
+            --error-color: #f44336;
+            --light-gray: #f5f5f5;
+            --white: #ffffff;
+            --dark-gray: #000000;
+            --sidebar-bg: #2c3e50;
+            --sidebar-hover: #34495e;
+            --sidebar-active: #3498db;
+            
+            /* Colores para niveles de severidad */
+            --bajo-color: #4CAF50;
+            --medio-color: #FF9800;
+            --alto-color: #f44336;
+            
+            /* Colores para estados */
+            --activo-color: #4CAF50;
+            --liberado-color: #9E9E9E;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-space {
+            height: 70px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            min-height: calc(100vh - 140px);
+        }
+
+        .container {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .card {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: none;
+        }
+        
+        .card-header {
+            border-radius: 8px 8px 0 0 !important;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--invitado-color);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+
+        .btn-info {
+            background-color: var(--admin-color);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+
+        .btn-danger {
+            background-color: var(--error-color);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+
+        .export-btn {
+            background-color: var(--grower-junior-color);
+            border: none;
+            color: white;
+        }
+        
+        .export-btn:hover {
+            background-color: #e68900;
+        }
+
+        .points-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .points-table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .points-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .points-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .present-badge {
+            background-color: var(--primary-color);
+        }
+        
+        .absent-badge {
+            background-color: var(--error-color);
+        }
+
+        .attendance-rate {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stats-card {
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .filter-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--admin-color);
+        }
+
+        .progress {
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .progress-bar {
+            background-color: var(--primary-color);
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .pagination .page-link {
+            color: var(--primary-color);
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(76, 175, 80, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer-space {
+            height: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .table-responsive {
+                font-size: 0.8rem;
+            }
+            
+            .stats-card {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Espacio reservado para el header -->
+    <div class="header-space"></div>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="#">Inicio</a> > <a href="#">Asistencias</a> > Historial
+            </div>
+            
+            <h1>Historial de Asistencias</h1>
+
+            <!-- Filtros -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filtros de Búsqueda</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="filter-date" class="form-label">Fecha</label>
+                                <input type="date" class="form-control" id="filter-date">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="filter-area" class="form-label">Invernadero/Área</label>
+                                <select class="form-select" id="filter-area">
+                                    <option value="">Todos los áreas</option>
+                                    <!-- Opciones se cargarán dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="filter-employee" class="form-label">Empleado</label>
+                                <input type="text" class="form-control" id="filter-employee" placeholder="Buscar por nombre...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" id="apply-filters">
+                                        <i class="fas fa-search me-2"></i>Aplicar Filtros
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card stats-card">
+                        <div class="card-body text-center">
+                            <h6>Total de Registros</h6>
+                            <h3 id="total-records">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stats-card">
+                        <div class="card-body text-center">
+                            <h6>Días con Registro</h6>
+                            <h3 id="total-days">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stats-card">
+                        <div class="card-body text-center">
+                            <h6>Áreas con Registro</h6>
+                            <h3 id="total-areas">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stats-card">
+                        <div class="card-body text-center">
+                            <h6>Tasa de Asistencia</h6>
+                            <div class="attendance-rate" id="attendance-rate">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial de asistencias -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-table me-2"></i>Registros de Asistencia</h5>
+                    <button class="btn btn-sm export-btn" id="export-data">
+                        <i class="fas fa-file-export me-2"></i>Exportar Datos
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="points-table-container">
+                        <table class="points-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Invernadero/Área</th>
+                                    <th>Total Empleados</th>
+                                    <th>Presentes</th>
+                                    <th>Ausentes</th>
+                                    <th>Tasa de Asistencia</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-history">
+                                <tr>
+                                    <td colspan="7" class="loading">
+                                        <div class="spinner"></div>
+                                        <p>Cargando historial...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Paginación -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center" id="pagination">
+                            <!-- La paginación se generará dinámicamente -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Resumen por empleado -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-user-check me-2"></i>Resumen por Empleado</h5>
+                </div>
+                <div class="card-body">
+                    <div class="points-table-container">
+                        <table class="points-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Código</th>
+                                    <th>Puesto</th>
+                                    <th>Área Principal</th>
+                                    <th>Días Registrados</th>
+                                    <th>Asistencias</th>
+                                    <th>Ausencias</th>
+                                    <th>Tasa de Asistencia</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employee-summary">
+                                <tr>
+                                    <td colspan="8" class="loading">
+                                        <div class="spinner"></div>
+                                        <p>Cargando resumen de empleados...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Espacio reservado para el footer -->
+    <div class="footer-space"></div>
+
+    <!-- Modal para ver detalles de asistencia -->
+    <div class="modal fade" id="attendanceDetailModal" tabindex="-1" aria-labelledby="attendanceDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="attendanceDetailModalLabel">Detalles de Asistencia</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 id="detail-title"></h6>
+                    <div class="points-table-container">
+                        <table class="points-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Código</th>
+                                    <th>Puesto</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-detail-list">
+                                <!-- Contenido dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para notificaciones -->
+    <div class="toast-container">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="fas fa-check-circle me-2 text-success"></i>
+                <strong class="me-auto">Sistema de Asistencias</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toast-message">
+                Operación completada correctamente
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Database -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // Configuración de Firebase con tu URL
+        const firebaseConfig = {
+            databaseURL: "https://agro-productos-default-rtdb.firebaseio.com"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Referencias a las tablas
+        const personalRef = database.ref('personal');
+        const attendanceRef = database.ref('asistencia');
+
+        // Variables globales
+        let allEmployees = [];
+        let allAttendanceData = {};
+        let filteredAttendanceData = [];
+        let allAreas = new Set();
+        let currentPage = 1;
+        const recordsPerPage = 10;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEmployees();
+            setupEventListeners();
+        });
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Aplicar filtros
+            document.getElementById('apply-filters').addEventListener('click', applyFilters);
+            
+            // Exportar datos
+            document.getElementById('export-data').addEventListener('click', exportData);
+            
+            // Filtro por fecha - aplicar al cambiar
+            document.getElementById('filter-date').addEventListener('change', applyFilters);
+            
+            // Filtro por área - aplicar al cambiar
+            document.getElementById('filter-area').addEventListener('change', applyFilters);
+            
+            // Filtro por empleado - aplicar al escribir
+            document.getElementById('filter-employee').addEventListener('input', applyFilters);
+        }
+
+        // Cargar empleados desde Firebase
+        function loadEmployees() {
+            personalRef.once('value').then((snapshot) => {
+                allEmployees = [];
+                allAreas = new Set();
+                
+                snapshot.forEach((childSnapshot) => {
+                    const employee = childSnapshot.val();
+                    employee.id = childSnapshot.key;
+                    allEmployees.push(employee);
+                    
+                    // Recopilar todas las áreas únicas
+                    if (employee.invernaderos && Array.isArray(employee.invernaderos)) {
+                        employee.invernaderos.forEach(area => allAreas.add(area));
+                    }
+                });
+                
+                // Cargar selector de áreas
+                loadAreaSelector();
+                
+                // Cargar datos de asistencia
+                loadAttendanceData();
+            }).catch((error) => {
+                console.error('Error al cargar empleados:', error);
+            });
+        }
+
+        // Cargar selector de áreas para filtros
+        function loadAreaSelector() {
+            const areaSelect = document.getElementById('filter-area');
+            
+            // Ordenar áreas
+            const sortedAreas = Array.from(allAreas).sort((a, b) => {
+                // Poner áreas especiales primero
+                const isSpecialA = isNaN(a);
+                const isSpecialB = isNaN(b);
+                
+                if (isSpecialA && !isSpecialB) return -1;
+                if (!isSpecialA && isSpecialB) return 1;
+                return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+            });
+            
+            sortedAreas.forEach(area => {
+                const option = document.createElement('option');
+                option.value = area;
+                
+                // Mostrar nombre apropiado
+                if (area === 'Fitosanidad' || area === 'Riego' || area === 'Acopio' || area === 'Áreas Verdes') {
+                    option.textContent = area;
+                } else {
+                    option.textContent = 'Invernadero ' + area;
+                }
+                
+                areaSelect.appendChild(option);
+            });
+        }
+
+        // Cargar datos de asistencia desde Firebase
+        function loadAttendanceData() {
+            attendanceRef.once('value').then((snapshot) => {
+                allAttendanceData = snapshot.val() || {};
+                applyFilters(); // Aplicar filtros por defecto (mostrar todo)
+            }).catch((error) => {
+                console.error('Error al cargar datos de asistencia:', error);
+                document.getElementById('attendance-history').innerHTML = 
+                    '<tr><td colspan="7" class="no-data">Error al cargar el historial</td></tr>';
+            });
+        }
+
+        // Aplicar filtros
+        function applyFilters() {
+            const dateFilter = document.getElementById('filter-date').value;
+            const areaFilter = document.getElementById('filter-area').value;
+            const employeeFilter = document.getElementById('filter-employee').value.toLowerCase();
+            
+            filteredAttendanceData = [];
+            
+            // Recorrer todas las fechas
+            Object.keys(allAttendanceData).sort().reverse().forEach(fecha => {
+                // Aplicar filtro de fecha si está activo
+                if (dateFilter && fecha !== dateFilter) {
+                    return;
+                }
+                
+                const areasData = allAttendanceData[fecha];
+                
+                // Recorrer todas las áreas de esta fecha
+                Object.keys(areasData).forEach(area => {
+                    // Aplicar filtro de área si está activo
+                    if (areaFilter && area !== areaFilter) {
+                        return;
+                    }
+                    
+                    const areaAttendance = areasData[area];
+                    const total = Object.keys(areaAttendance).length;
+                    const present = Object.values(areaAttendance).filter(status => status === true).length;
+                    const absent = total - present;
+                    const attendanceRate = total > 0 ? Math.round((present / total) * 100) : 0;
+                    
+                    // Aplicar filtro de empleado si está activo
+                    if (employeeFilter) {
+                        // Verificar si algún empleado en esta área/registro coincide con el filtro
+                        let employeeMatch = false;
+                        
+                        Object.keys(areaAttendance).forEach(employeeId => {
+                            const employee = allEmployees.find(e => e.id === employeeId);
+                            if (employee && employee.nombre && employee.nombre.toLowerCase().includes(employeeFilter)) {
+                                employeeMatch = true;
+                            }
+                        });
+                        
+                        if (!employeeMatch) {
+                            return;
+                        }
+                    }
+                    
+                    filteredAttendanceData.push({
+                        fecha: fecha,
+                        area: area,
+                        total: total,
+                        present: present,
+                        absent: absent,
+                        attendanceRate: attendanceRate,
+                        attendanceData: areaAttendance
+                    });
+                });
+            });
+            
+            // Actualizar estadísticas
+            updateStatistics();
+            
+            // Mostrar datos filtrados
+            renderAttendanceHistory();
+            
+            // Actualizar resumen de empleados
+            updateEmployeeSummary();
+        }
+
+        // Actualizar estadísticas
+        function updateStatistics() {
+            // Total de registros
+            document.getElementById('total-records').textContent = filteredAttendanceData.length;
+            
+            // Días únicos con registro
+            const uniqueDays = new Set(filteredAttendanceData.map(item => item.fecha));
+            document.getElementById('total-days').textContent = uniqueDays.size;
+            
+            // Áreas únicas con registro
+            const uniqueAreas = new Set(filteredAttendanceData.map(item => item.area));
+            document.getElementById('total-areas').textContent = uniqueAreas.size;
+            
+            // Tasa de asistencia general
+            let totalPresent = 0;
+            let totalEmployees = 0;
+            
+            filteredAttendanceData.forEach(item => {
+                totalPresent += item.present;
+                totalEmployees += item.total;
+            });
+            
+            const overallRate = totalEmployees > 0 ? Math.round((totalPresent / totalEmployees) * 100) : 0;
+            document.getElementById('attendance-rate').textContent = overallRate + '%';
+        }
+
+        // Renderizar historial de asistencia
+        function renderAttendanceHistory() {
+            const historyTable = document.getElementById('attendance-history');
+            
+            if (filteredAttendanceData.length === 0) {
+                historyTable.innerHTML = '<tr><td colspan="7" class="no-data">No hay registros que coincidan con los filtros</td></tr>';
+                renderPagination();
+                return;
+            }
+            
+            // Calcular paginación
+            const totalPages = Math.ceil(filteredAttendanceData.length / recordsPerPage);
+            const startIndex = (currentPage - 1) * recordsPerPage;
+            const endIndex = Math.min(startIndex + recordsPerPage, filteredAttendanceData.length);
+            const pageData = filteredAttendanceData.slice(startIndex, endIndex);
+            
+            historyTable.innerHTML = '';
+            
+            pageData.forEach(item => {
+                const row = document.createElement('tr');
+                
+                // Formatear fecha para mostrar
+                const fechaParts = item.fecha.split('-');
+                const fechaFormatted = `${fechaParts[2]}/${fechaParts[1]}/${fechaParts[0]}`;
+                
+                // Mostrar nombre apropiado del área
+                let areaName = item.area;
+                if (item.area !== 'Fitosanidad' && item.area !== 'Riego' && item.area !== 'Acopio' && item.area !== 'Áreas Verdes') {
+                    areaName = 'Invernadero ' + item.area;
+                }
+                
+                row.innerHTML = `
+                    <td>${fechaFormatted}</td>
+                    <td>${areaName}</td>
+                    <td>${item.total}</td>
+                    <td><span class="badge present-badge">${item.present}</span></td>
+                    <td><span class="badge absent-badge">${item.absent}</span></td>
+                    <td>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: ${item.attendanceRate}%;" 
+                                aria-valuenow="${item.attendanceRate}" aria-valuemin="0" aria-valuemax="100">
+                                ${item.attendanceRate}%
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-info view-detail-btn" data-fecha="${item.fecha}" data-area="${item.area}">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                    </td>
+                `;
+                
+                historyTable.appendChild(row);
+            });
+            
+            // Añadir event listeners a los botones de ver detalle
+            document.querySelectorAll('.view-detail-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const fecha = this.dataset.fecha;
+                    const area = this.dataset.area;
+                    viewAttendanceDetail(fecha, area);
+                });
+            });
+            
+            // Renderizar paginación
+            renderPagination(totalPages);
+        }
+
+        // Renderizar paginación
+        function renderPagination(totalPages = 1) {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Botón anterior
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}">Anterior</a>`;
+            pagination.appendChild(prevLi);
+            
+            // Números de página
+            for (let i = 1; i <= totalPages; i++) {
+                const pageLi = document.createElement('li');
+                pageLi.className = `page-item ${currentPage === i ? 'active' : ''}`;
+                pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                pagination.appendChild(pageLi);
+            }
+            
+            // Botón siguiente
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}">Siguiente</a>`;
+            pagination.appendChild(nextLi);
+            
+            // Añadir event listeners a los enlaces de paginación
+            document.querySelectorAll('.page-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = parseInt(this.dataset.page);
+                    if (page >= 1 && page <= totalPages) {
+                        currentPage = page;
+                        renderAttendanceHistory();
+                    }
+                });
+            });
+        }
+
+        // Ver detalle de asistencia
+        function viewAttendanceDetail(fecha, area) {
+            const areaData = allAttendanceData[fecha][area];
+            const detailList = document.getElementById('attendance-detail-list');
+            detailList.innerHTML = '';
+            
+            // Formatear fecha para mostrar
+            const fechaParts = fecha.split('-');
+            const fechaFormatted = `${fechaParts[2]}/${fechaParts[1]}/${fechaParts[0]}`;
+            
+            // Mostrar nombre apropiado del área
+            let areaName = area;
+            if (area !== 'Fitosanidad' && area !== 'Riego' && area !== 'Acopio' && area !== 'Áreas Verdes') {
+                areaName = 'Invernadero ' + area;
+            }
+            
+            document.getElementById('detail-title').textContent = `Asistencia del ${fechaFormatted} - ${areaName}`;
+            
+            // Obtener detalles de los empleados
+            const employeeIds = Object.keys(areaData);
+            
+            if (employeeIds.length === 0) {
+                detailList.innerHTML = '<tr><td colspan="4" class="no-data">No hay datos de asistencia</td></tr>';
+            } else {
+                // Buscar información de cada empleado
+                employeeIds.forEach(employeeId => {
+                    const status = areaData[employeeId];
+                    const employee = allEmployees.find(e => e.id === employeeId);
+                    
+                    const row = document.createElement('tr');
+                    
+                    if (employee) {
+                        row.innerHTML = `
+                            <td>${employee.nombre || '-'}</td>
+                            <td>${employee.codigo || '-'}</td>
+                            <td>${employee.puesto || '-'}</td>
+                            <td>${status ? '<span class="badge present-badge">Presente</span>' : '<span class="badge absent-badge">Ausente</span>'}</td>
+                        `;
+                    } else {
+                        // Para empleados que ya no existen en la base de datos
+                        row.innerHTML = `
+                            <td>Empleado no encontrado</td>
+                            <td>${employeeId}</td>
+                            <td>-</td>
+                            <td>${status ? '<span class="badge present-badge">Presente</span>' : '<span class="badge absent-badge">Ausente</span>'}</td>
+                        `;
+                    }
+                    
+                    detailList.appendChild(row);
+                });
+            }
+            
+            // Mostrar el modal
+            const modal = new bootstrap.Modal(document.getElementById('attendanceDetailModal'));
+            modal.show();
+        }
+
+        // Actualizar resumen por empleado
+        function updateEmployeeSummary() {
+            const summaryTable = document.getElementById('employee-summary');
+            
+            // Calcular estadísticas por empleado
+            const employeeStats = {};
+            
+            allEmployees.forEach(employee => {
+                employeeStats[employee.id] = {
+                    nombre: employee.nombre,
+                    codigo: employee.codigo,
+                    puesto: employee.puesto,
+                    areaPrincipal: getMainArea(employee),
+                    diasRegistrados: 0,
+                    asistencias: 0,
+                    ausencias: 0
+                };
+            });
+            
+            // Procesar todos los registros de asistencia
+            filteredAttendanceData.forEach(record => {
+                Object.keys(record.attendanceData).forEach(employeeId => {
+                    if (employeeStats[employeeId]) {
+                        employeeStats[employeeId].diasRegistrados++;
+                        if (record.attendanceData[employeeId]) {
+                            employeeStats[employeeId].asistencias++;
+                        } else {
+                            employeeStats[employeeId].ausencias++;
+                        }
+                    }
+                });
+            });
+            
+            // Convertir a array y ordenar por nombre
+            const employeeStatsArray = Object.values(employeeStats).sort((a, b) => 
+                a.nombre.localeCompare(b.nombre)
+            );
+            
+            // Renderizar tabla
+            if (employeeStatsArray.length === 0) {
+                summaryTable.innerHTML = '<tr><td colspan="8" class="no-data">No hay datos de empleados</td></tr>';
+                return;
+            }
+            
+            summaryTable.innerHTML = '';
+            
+            employeeStatsArray.forEach(stat => {
+                const tasaAsistencia = stat.diasRegistrados > 0 ? 
+                    Math.round((stat.asistencias / stat.diasRegistrados) * 100) : 0;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${stat.nombre || '-'}</td>
+                    <td>${stat.codigo || '-'}</td>
+                    <td>${stat.puesto || '-'}</td>
+                    <td>${stat.areaPrincipal}</td>
+                    <td>${stat.diasRegistrados}</td>
+                    <td><span class="badge present-badge">${stat.asistencias}</span></td>
+                    <td><span class="badge absent-badge">${stat.ausencias}</span></td>
+                    <td>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: ${tasaAsistencia}%;" 
+                                aria-valuenow="${tasaAsistencia}" aria-valuemin="0" aria-valuemax="100">
+                                ${tasaAsistencia}%
+                            </div>
+                        </div>
+                    </td>
+                `;
+                
+                summaryTable.appendChild(row);
+            });
+        }
+
+        // Obtener el área principal de un empleado
+        function getMainArea(employee) {
+            if (!employee.invernaderos || employee.invernaderos.length === 0) return 'Sin área';
+            
+            // Priorizar áreas especiales
+            const specialAreas = ['Fitosanidad', 'Riego', 'Acopio', 'Áreas Verdes'];
+            const specialArea = employee.invernaderos.find(area => specialAreas.includes(area));
+            
+            if (specialArea) return specialArea;
+            
+            // Devolver el primer invernadero
+            return 'Invernadero ' + employee.invernaderos[0];
+        }
+
+        // Exportar datos
+        function exportData() {
+            // Crear contenido CSV
+            let csvContent = "Fecha,Área,Total Empleados,Presentes,Ausentes,Tasa de Asistencia\n";
+            
+            filteredAttendanceData.forEach(item => {
+                // Formatear fecha
+                const fechaParts = item.fecha.split('-');
+                const fechaFormatted = `${fechaParts[2]}/${fechaParts[1]}/${fechaParts[0]}`;
+                
+                // Nombre del área
+                let areaName = item.area;
+                if (item.area !== 'Fitosanidad' && item.area !== 'Riego' && item.area !== 'Acopio' && item.area !== 'Áreas Verdes') {
+                    areaName = 'Invernadero ' + item.area;
+                }
+                
+                csvContent += `"${fechaFormatted}","${areaName}",${item.total},${item.present},${item.absent},${item.attendanceRate}%\n`;
+            });
+            
+            // Crear y descargar archivo
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `historial_asistencias_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('Datos exportados correctamente');
+        }
+    </script>
+</body>
+</html>
