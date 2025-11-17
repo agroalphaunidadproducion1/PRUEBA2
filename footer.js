@@ -1,4 +1,4 @@
-// footer.js - Pie de página para Sistema Agroalpha
+// footer.js - Pie de página para Sistema Agroalpha - VERSIÓN CORREGIDA
 
 class FooterManager {
     constructor() {
@@ -6,15 +6,31 @@ class FooterManager {
     }
 
     init() {
-        this.crearFooter();
-        this.agregarEventListeners();
+        // Esperar a que el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.crearFooter();
+            });
+        } else {
+            this.crearFooter();
+        }
     }
 
     crearFooter() {
+        // Verificar si ya existe un footer
+        const existingFooter = document.querySelector('footer');
+        if (existingFooter) {
+            existingFooter.remove();
+        }
+
         const footer = document.createElement('footer');
         footer.innerHTML = this.generarHTML();
         footer.style.cssText = this.obtenerEstilosFooter();
+        
+        // Insertar el footer al FINAL del body
         document.body.appendChild(footer);
+        
+        this.aplicarEstilosDinamicos();
     }
 
     generarHTML() {
@@ -30,22 +46,27 @@ class FooterManager {
 
     obtenerEstilosFooter() {
         return `
-            position: fixed;
-            bottom: 0;
-            left: 0;
+            position: relative;
             width: 100%;
             background-color: rgba(255, 255, 255, 0.95);
             padding: 15px 0;
             text-align: center;
             border-top: 1px solid #e0e0e0;
             font-family: 'Roboto', sans-serif;
-            z-index: 1000;
+            z-index: 10;
             backdrop-filter: blur(5px);
+            margin-top: 40px;
         `;
     }
 
     aplicarEstilosDinamicos() {
+        // Verificar si los estilos ya existen
+        if (document.getElementById('footer-styles')) {
+            return;
+        }
+
         const style = document.createElement('style');
+        style.id = 'footer-styles';
         style.textContent = `
             .footer-container {
                 max-width: 1200px;
@@ -75,6 +96,18 @@ class FooterManager {
                 text-decoration: underline;
             }
 
+            /* Asegurar que el footer esté siempre detrás de otros elementos */
+            header-component,
+            sidebar-component,
+            .header,
+            .sidebar {
+                z-index: 1000 !important;
+            }
+
+            footer {
+                z-index: 10 !important;
+            }
+
             @media (max-width: 768px) {
                 .footer-content {
                     font-size: 11px;
@@ -97,46 +130,12 @@ class FooterManager {
         `;
         document.head.appendChild(style);
     }
-
-    agregarEventListeners() {
-        // Aplicar estilos después de que el DOM esté completamente cargado
-        document.addEventListener('DOMContentLoaded', () => {
-            this.aplicarEstilosDinamicos();
-            this.ajustarPosicion();
-        });
-
-        // Ajustar posición en redimensionamiento
-        window.addEventListener('resize', () => {
-            this.ajustarPosicion();
-        });
-
-        // Manejar clic en el enlace de ayuda técnica
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('footer-link')) {
-                e.preventDefault();
-                window.location.href = 'soporte.html';
-            }
-        });
-    }
-
-    ajustarPosicion() {
-        const footer = document.querySelector('footer');
-        const bodyHeight = document.body.scrollHeight;
-        const windowHeight = window.innerHeight;
-        
-        if (bodyHeight < windowHeight) {
-            footer.style.position = 'fixed';
-        } else {
-            footer.style.position = 'relative';
-        }
-    }
 }
 
-// Inicializar el footer cuando el script se carga
+// Inicializar el footer
 const footer = new FooterManager();
 
 // Exportar para uso en otros módulos si es necesario
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = FooterManager;
-
 }
