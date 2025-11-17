@@ -1,0 +1,340 @@
+:root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+            --admin-color: #2196F3;
+            --grower-junior-color: #FF9800;
+            --digitador-color: #9C27B0;
+            --tecnico-color: #607D8B;
+            --supervisor-color: #FF5722;
+            --invitado-color: #9E9E9E;
+            --gerente-general-color: #E91E63;
+            --gerente-produccion-color: #3F51B5;
+            --jefe-vivero-color: #009688;
+            --error-color: #f44336;
+            --light-gray: #f5f5f5;
+            --white: #ffffff;
+            --dark-gray: #000000;
+            --sidebar-bg: #2c3e50;
+            --sidebar-hover: #34495e;
+            --sidebar-active: #3498db;
+            
+            /* Nuevos colores para roles adicionales */
+            --grower-color: #FF9800;
+            --fitosanidad-color: #795548;
+            --culturales-color: #FF5722;
+            --riego-color: #00BCD4;
+            --consultor-color: #E91E63;
+            --mezclero-fitosanidad-color: #795548;
+            --usuario-color: #795548;
+            --default-role-color: #757575;
+            
+            /* Variables para los nuevos botones */
+            --card-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            --border-color: #dee2e6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            min-height: 100vh;
+            transition: margin-left 0.3s;
+        }
+        
+        /* Header con botón hamburguesa */
+        .header {
+            background-color: var(--white);
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--dark-gray);
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-right: 15px;
+        }
+        
+        .menu-toggle:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .brand h1 {
+            font-size: 20px;
+            color: var(--dark-gray);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: -250px;
+            padding: 20px 0;
+            overflow-y: auto;
+            transition: left 0.3s;
+            z-index: 200;
+        }
+        
+        .sidebar.active {
+            left: 0;
+        }
+        
+        .close-menu {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+        }
+        
+        .logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .user-info {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+        
+        .user-info p {
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: white;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+        
+        /* Clases actualizadas para los badges de roles */
+        .admin-badge { background-color: var(--admin-color); color: white; }
+        .grower-badge { background-color: var(--grower-color); color: white; }
+        .grower-junior-badge { background-color: var(--grower-junior-color); color: white; }
+        .digitador-badge { background-color: var(--digitador-color); color: white; }
+        .fitosanidad-badge { background-color: var(--fitosanidad-color); color: white; }
+        .culturales-badge { background-color: var(--culturales-color); color: white; }
+        .riego-badge { background-color: var(--riego-color); color: white; }
+        .supervisor-badge { background-color: var(--supervisor-color); color: white; }
+        .invitado-badge { background-color: var(--invitado-color); color: white; }
+        .gerente-general-badge { background-color: var(--gerente-general-color); color: white; }
+        .gerente-produccion-badge { background-color: var(--gerente-produccion-color); color: white; }
+        .jefe-vivero-badge { background-color: var(--jefe-vivero-color); color: white; }
+        .consultor-badge { background-color: var(--consultor-color); color: white; }
+        .mezclero-fitosanidad-badge { background-color: var(--mezclero-fitosanidad-color); color: white; }
+        .usuario1-badge { background-color: var(--usuario-color); color: white; }
+        .usuario2-badge { background-color: var(--usuario-color); color: white; }
+        .usuario3-badge { background-color: var(--usuario-color); color: white; }
+        .usuario4-badge { background-color: var(--usuario-color); color: white; }
+        .default-badge { background-color: var(--default-role-color); color: white; }
+        
+        .nav-section {
+            margin-bottom: 25px;
+        }
+        
+        .nav-section h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            padding: 0 20px;
+            margin-bottom: 10px;
+            color: #95a5a6;
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-item:hover {
+            background-color: var(--sidebar-hover);
+        }
+        
+        .nav-item.active {
+            background-color: var(--sidebar-active);
+        }
+        
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Overlay para cerrar menú al hacer clic fuera */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 150;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 70px);
+            transition: margin-left 0.3s;
+        }
+        
+        .container {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 24px;
+        }
+        
+        /* NUEVOS BOTONES - Estilo de la página de parámetros */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .card-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: var(--primary-color) !important;
+        }
+        
+        .card h3 {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        /* Efecto hover para desktop */
+        @media (min-width: 768px) {
+            .card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .main-content {
+                padding: 15px;
+            }
+            
+            .cards-container {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .card {
+                padding: 12px;
+                min-height: 110px;
+            }
+            
+            .card-icon {
+                font-size: 1.5rem;
+            }
+            
+            .card h3 {
+                font-size: 0.8rem;
+            }
+        }
