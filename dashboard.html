@@ -7,13 +7,308 @@
     <link rel="icon" type="image/png" href="icon-192.png">
     
     <!-- Estilos -->
-    <link rel="stylesheet" href="../css/theme.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
-    <link rel="stylesheet" href="../components.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/components.css">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', 'Roboto', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-tertiary) 100%);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Contenido principal mejorado */
+.main-content {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    transition: margin-left 0.3s;
+}
+
+.dashboard-section {
+    margin-bottom: 30px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+}
+
+.section-title {
+    font-size: 1.3rem;
+    color: var(--primary-dark);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--primary-light);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-title::before {
+    content: '▸';
+    color: var(--primary-color);
+    font-size: 1.5rem;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+    border-color: var(--primary-light);
+}
+
+.card-icon {
+    font-size: 2.2rem;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-icon {
+    transform: scale(1.1);
+}
+
+.card h3 {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    margin-top: 40px;
+    transition: all 0.3s ease;
+}
+
+/* Estados de carga y error */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.loading i {
+    margin-right: 10px;
+}
+
+.error-message {
+    text-align: center;
+    padding: 25px;
+    color: #dc3545;
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border-radius: 10px;
+    margin: 10px 0;
+    border-left: 4px solid #dc3545;
+}
+
+/* Clase utilitaria */
+.hidden {
+    display: none;
+}
+
+/* Estilos responsivos mejorados */
+@media (max-width: 1024px) {
+    .brand-text h1 {
+        font-size: 1.2rem;
+    }
     
+    .user-name {
+        max-width: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 12px 15px;
+        height: 60px;
+    }
+    
+    .header-content {
+        gap: 10px;
+    }
+    
+    .header-left {
+        gap: 10px;
+    }
+    
+    .brand-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+    
+    .brand-text h1 {
+        font-size: 1.1rem;
+    }
+    
+    .brand-text span {
+        font-size: 0.7rem;
+    }
+    
+    .user-info {
+        display: none;
+    }
+    
+    .mobile-user-menu {
+        display: block;
+    }
+    
+    .header-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .main-content {
+        padding: 15px;
+    }
+    
+    .cards-container {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+    }
+    
+    .card {
+        padding: 15px;
+        min-height: 130px;
+    }
+    
+    .card-icon {
+        font-size: 1.8rem;
+    }
+    
+    .dashboard-section {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 10px 12px;
+        height: 55px;
+    }
+    
+    .brand {
+        gap: 8px;
+    }
+    
+    .brand-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+    
+    .brand-text h1 {
+        font-size: 1rem;
+    }
+    
+    .brand-text span {
+        font-size: 0.65rem;
+    }
+    
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+    
+    .header-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .cards-container {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
+    }
+    
+    .card {
+        padding: 12px;
+        min-height: 120px;
+    }
+    
+    .card-icon {
+        font-size: 1.6rem;
+    }
+    
+    .card h3 {
+        font-size: 0.85rem;
+    }
+    
+    .header-actions {
+        gap: 6px;
+    }
+}
+
+@media (max-width: 360px) {
+    .brand-text h1 {
+        font-size: 0.9rem;
+    }
+    
+    .brand-text span {
+        display: none;
+    }
+    
+    .cards-container {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    }
+}
+    </style>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
@@ -38,8 +333,338 @@
     <!-- Scripts -->
     <script src="header-component.js"></script>
     <script src="sidebar-component.js"></script>
-    <script src="../js/dashboard.js"></script>
     <script src="footer.js"></script>
-</body>
+    <script>
+        // dashboard.js - Lógica específica del dashboard
 
+// Configuración de Firebase
+const firebaseConfig = {
+    databaseURL: "https://agro-productos-default-rtdb.firebaseio.com/"
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const activeUsersRef = database.ref('uactivos');
+const modulesRef = database.ref('modules');
+const accessRef = database.ref('accesos');
+
+// Mapeo de IDs en español a inglés (para compatibilidad)
+const moduleIdMap = {
+    // Módulos en español -> inglés
+    'usuarios': 'users',
+    'asistencias': 'attendance',
+    'personal': 'staff',
+    'registros': 'records',
+    'cosechas': 'harvest',
+    'documentos': 'documents',
+    'beneficios': 'beneficios',
+    'actividades': 'activities',
+    'quimicos': 'chemicals',
+    'basedatos': 'database',
+    'aplicaciones': 'applications',
+    'ver-aplicaciones': 'view-apps',
+    'registrar-asistencia': 'register-att',
+    'registrar-actividades': 'register-act',
+    'camaron': 'shrimp',
+    'proyecciones': 'projections',
+    'consultas': 'queries',
+    'plagas': 'pests',
+    'riego': 'irrigation',
+    'humedad': 'humidity',
+    'reportes-publicos': 'public-reports',
+    
+    // Módulos en inglés (para referencia)
+    'users': 'users',
+    'attendance': 'attendance',
+    'staff': 'staff',
+    'records': 'records',
+    'harvest': 'harvest',
+    'documents': 'documents',
+    'beneficios': 'beneficios',
+    'activities': 'activities',
+    'chemicals': 'chemicals',
+    'database': 'database',
+    'applications': 'applications',
+    'view-apps': 'view-apps',
+    'register-att': 'register-att',
+    'register-act': 'register-act',
+    'shrimp': 'shrimp',
+    'projections': 'projections',
+    'queries': 'queries',
+    'pests': 'pests',
+    'irrigation': 'irrigation',
+    'humidity': 'humidity',
+    'public-reports': 'public-reports'
+};
+
+// Variables globales
+let systemModules = [];
+let roleAccess = {};
+let userRole = '';
+
+// Sistema de temas
+const themes = ['light', 'dark', 'blue', 'orange', 'purple'];
+let currentThemeIndex = 0;
+
+// Cargar tema guardado
+function loadSavedTheme() {
+    const savedTheme = localStorage.getItem('agroalpha-theme');
+    if (savedTheme) {
+        currentThemeIndex = themes.indexOf(savedTheme);
+        if (currentThemeIndex === -1) currentThemeIndex = 0;
+        document.body.setAttribute('data-theme', themes[currentThemeIndex]);
+    }
+}
+
+// Cargar datos del usuario en los componentes
+async function loadUserDataInComponents(userData) {
+    const headerComponent = document.querySelector('header-component');
+    const sidebarComponent = document.querySelector('sidebar-component');
+    
+    console.log('Cargando datos del usuario en componentes:', userData);
+    
+    if (headerComponent && headerComponent.loadUserData) {
+        try {
+            await headerComponent.loadUserData(userData.username);
+            console.log('✅ Datos cargados en header');
+        } catch (error) {
+            console.error('Error cargando datos en header:', error);
+            // Fallback: actualizar directamente si loadUserData falla
+            if (headerComponent.updateUserInfo) {
+                headerComponent.updateUserInfo(userData);
+            }
+        }
+    }
+    
+    if (sidebarComponent && sidebarComponent.loadUserData) {
+        try {
+            await sidebarComponent.loadUserData(userData.username);
+            console.log('✅ Datos cargados en sidebar');
+        } catch (error) {
+            console.error('Error cargando datos en sidebar:', error);
+            // Fallback: actualizar directamente si loadUserData falla
+            if (sidebarComponent.updateUserInfo) {
+                sidebarComponent.updateUserInfo(userData);
+            }
+        }
+    }
+}
+
+// Verificar sesión al cargar
+document.addEventListener('DOMContentLoaded', async function() {
+    const userData = JSON.parse(sessionStorage.getItem('currentUser'));
+    
+    if (!userData || !userData.username) {
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    // Guardar el rol del usuario
+    userRole = userData.role;
+    
+    // Cargar tema guardado
+    loadSavedTheme();
+    
+    // Configurar eventos de logout
+    document.addEventListener('logout', logout);
+    
+    // Verificar si el usuario sigue activo en uactivos
+    activeUsersRef.child(userData.username).once('value')
+        .then(snapshot => {
+            if (!snapshot.exists()) {
+                logout();
+                return;
+            }
+            
+            // Cargar datos del usuario en los componentes
+            loadUserDataInComponents(userData);
+            
+            // Cargar datos de Firebase para los módulos
+            loadFirebaseData();
+        })
+        .catch(error => {
+            console.error('Error verificando sesión activa:', error);
+            showError('Error de conexión. Intente recargar la página.');
+            
+            // Intentar cargar datos del usuario aunque falle la verificación
+            loadUserDataInComponents(userData);
+        });
+});
+
+// Cargar datos desde Firebase
+function loadFirebaseData() {
+    // Cargar módulos y accesos en paralelo
+    Promise.all([
+        modulesRef.once('value'),
+        accessRef.once('value')
+    ])
+    .then(([modulesSnapshot, accessSnapshot]) => {
+        // Procesar módulos
+        if (modulesSnapshot.exists()) {
+            const modulesData = modulesSnapshot.val();
+            
+            // Verificar si modulesData es un array o un objeto
+            if (Array.isArray(modulesData)) {
+                systemModules = modulesData;
+            } else if (typeof modulesData === 'object' && modulesData !== null) {
+                // Convertir objeto a array
+                systemModules = Object.values(modulesData);
+            } else {
+                systemModules = [];
+            }
+            
+            console.log('Módulos cargados:', systemModules);
+        } else {
+            console.error('No se encontraron módulos en Firebase');
+            systemModules = [];
+        }
+        
+        // Procesar accesos
+        if (accessSnapshot.exists()) {
+            roleAccess = accessSnapshot.val();
+            console.log('Accesos cargados:', roleAccess);
+        } else {
+            console.error('No se encontraron accesos en Firebase');
+            roleAccess = {};
+        }
+        
+        // Generar las tarjetas con los permisos del usuario
+        generateFeatureCards();
+    })
+    .catch(error => {
+        console.error('Error cargando datos de Firebase:', error);
+        showError('Error al cargar los módulos. Intente recargar la página.');
+    });
+}
+
+// Obtener clase CSS para el badge según el rol
+function getBadgeClass(role) {
+    const roleClasses = {
+        'Administrador': 'admin-badge',
+        'Supervisor': 'supervisor-badge',
+        'Grower': 'grower-badge',
+        'Grower Junior': 'grower-badge',
+        'Digitador': 'digitador-badge',
+        'Técnico Fitosanidad': 'fitosanidad-badge',
+        'Técnico Prácticas Culturales': 'culturales-badge',
+        'Técnico Riego': 'riego-badge',
+        'Invitado': 'invitado-badge',
+        'Gerente de Producción': 'gerente-badge',
+        'Gerente General': 'gerente-badge',
+        'Camaron': 'camaron-badge',
+        'Jefe de Vivero': 'jefe-vivero-badge',
+        'Mezclero Fitosanidad': 'mezclero-fitosanidad-badge',
+        'Usuario1': 'usuario1-badge',
+        'Usuario2': 'usuario2-badge',
+        'Usuario3': 'usuario3-badge',
+        'Usuario4': 'usuario4-badge'
+    };
+    return roleClasses[role] || 'invitado-badge';
+}
+
+// Normalizar ID del módulo (para manejar español/inglés)
+function normalizeModuleId(moduleId) {
+    if (!moduleId) return null;
+    
+    // Si el ID ya está en inglés, devolverlo tal cual
+    if (moduleIdMap[moduleId]) {
+        return moduleIdMap[moduleId];
+    }
+    
+    // Si no está en el mapa, intentar encontrar coincidencia
+    const normalizedId = moduleId.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    return moduleIdMap[normalizedId] || moduleId;
+}
+
+// Generar tarjetas de características según los permisos del rol
+function generateFeatureCards() {
+    const container = document.getElementById('featuresContainer');
+    
+    // Verificar si tenemos los datos necesarios
+    if (systemModules.length === 0) {
+        container.innerHTML = '<div class="error-message">No hay módulos configurados en el sistema.</div>';
+        return;
+    }
+    
+    if (Object.keys(roleAccess).length === 0) {
+        container.innerHTML = '<div class="error-message">No hay permisos configurados en el sistema.</div>';
+        return;
+    }
+    
+    // Obtener los accesos para el rol del usuario
+    const userAccess = roleAccess[userRole];
+    
+    if (!userAccess) {
+        container.innerHTML = `<div class="error-message">No se encontraron permisos para el rol "${userRole}".</div>`;
+        return;
+    }
+    
+    // Filtrar módulos a los que el usuario tiene acceso
+    const accessibleModules = [];
+    
+    systemModules.forEach(module => {
+        if (!module || !module.id) return;
+        
+        // Normalizar ID del módulo para compatibilidad
+        const normalizedId = normalizeModuleId(module.id);
+        const hasAccess = userAccess[normalizedId] || userAccess[module.id];
+        
+        if (hasAccess) {
+            accessibleModules.push(module);
+        }
+    });
+    
+    if (accessibleModules.length === 0) {
+        container.innerHTML = '<div class="error-message">No tiene acceso a ningún módulo. Contacte al administrador.</div>';
+        return;
+    }
+    
+    // Generar tarjetas para los módulos accesibles
+    container.innerHTML = '';
+    accessibleModules.forEach(module => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = function() {
+            window.location.href = module.link || '#';
+        };
+        
+        card.innerHTML = `
+            <div class="card-icon"><i class="fas ${module.icon || 'fa-cube'}"></i></div>
+            <h3>${module.title || 'Módulo sin nombre'}</h3>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+// Mostrar mensaje de error
+function showError(message) {
+    const container = document.getElementById('featuresContainer');
+    container.innerHTML = `<div class="error-message">${message}</div>`;
+}
+
+// Cerrar sesión
+function logout() {
+    const userData = JSON.parse(sessionStorage.getItem('currentUser'));
+    
+    if (userData?.username) {
+        // Eliminar de usuarios activos
+        activeUsersRef.child(userData.username).remove()
+            .then(() => {
+                sessionStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            })
+            .catch(error => {
+                console.error('Error al cerrar sesión:', error);
+                sessionStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            });
+    } else {
+        sessionStorage.removeItem('currentUser');
+        window.location.href = 'index.html';
+    }
+}
+    </script>
+</body>
 </html>
