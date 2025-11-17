@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema Agroalpha</title>
+    <link rel="icon" type="image/png" href="icon-192.png">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/components.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+</head>
+<body data-theme="light">
+    <!-- Componentes -->
+    <header-component></header-component>
+    <sidebar-component></sidebar-component>
+    
+    <!-- Contenido principal mejorado -->
+    <div class="main-content" id="mainContent">
+        <div class="dashboard-section">
+            <h2 class="section-title">Módulos del Sistema</h2>
+            <div class="cards-container" id="featuresContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando módulos...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="header-component.js"></script>
+    <script src="sidebar-component.js"></script>
+    <script src="/js/dashboard.js"></script>
+    <script src="footer.js"></script>
+</body>
+</html>
